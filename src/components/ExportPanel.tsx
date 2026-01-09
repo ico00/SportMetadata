@@ -50,6 +50,13 @@ export default function ExportPanel({
       </h2>
 
       <div className="space-y-4">
+        {allTeamsCount > 0 && (
+          <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3">
+            <p className="text-sm text-blue-400">
+              ℹ️ Export will include <span className="font-semibold">{allTeamsCount}</span> {allTeamsCount === 1 ? 'team' : 'teams'} from the match
+            </p>
+          </div>
+        )}
         <div className="bg-gray-700 rounded-lg p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Statistics:</span>
@@ -89,13 +96,6 @@ export default function ExportPanel({
 
         {validPlayers.length > 0 && (
           <>
-            {allTeamsCount > 1 && (
-              <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3">
-                <p className="text-sm text-blue-400">
-                  ℹ️ Export will include all teams from the match ({allTeamsCount} teams)
-                </p>
-              </div>
-            )}
             <div className="bg-gray-700 rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Export Preview:</span>
