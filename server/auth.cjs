@@ -6,7 +6,7 @@ const isLocalhost = process.env.NODE_ENV !== 'production' ||
                     process.env.FLY_APP_NAME === undefined ||
                     process.env.ALLOW_LOCALHOST_AUTH === 'true';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'; // Default za development
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sprTmdatA9823-918!'; // Default za development
 const JWT_SECRET = process.env.JWT_SECRET || 'sport-metadata-secret-key-change-in-production';
 
 /**
