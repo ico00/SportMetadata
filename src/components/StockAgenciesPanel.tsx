@@ -2,6 +2,7 @@ import { Match, Team } from "../types";
 import { formatForShutterstock, formatForShutterstockEditorial, formatForImago } from "../utils/stockAgencies";
 import { FaCopy, FaImage, FaCheck, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 interface StockAgenciesPanelProps {
   match: Match | null;
@@ -9,6 +10,7 @@ interface StockAgenciesPanelProps {
 }
 
 export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesPanelProps) {
+  const { isAuthenticated } = useAuth();
   const [copied, setCopied] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [editedTexts, setEditedTexts] = useState<Record<string, string>>({});
@@ -69,31 +71,33 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
               Shutterstock
             </span>
             <div className="flex items-center gap-2">
-              {editing === "shutterstock" ? (
-                <>
+              {isAuthenticated && (
+                editing === "shutterstock" ? (
+                  <>
+                    <button
+                      onClick={() => handleSave("shutterstock")}
+                      className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaSave className="text-xs" />
+                      Save
+                    </button>
+                    <button
+                      onClick={() => handleCancel("shutterstock", shutterstockText)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaTimes className="text-xs" />
+                      Cancel
+                    </button>
+                  </>
+                ) : (
                   <button
-                    onClick={() => handleSave("shutterstock")}
-                    className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    onClick={() => handleEdit("shutterstock", shutterstockText)}
+                    className="px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                   >
-                    <FaSave className="text-xs" />
-                    Save
+                    <FaEdit className="text-xs" />
+                    Edit
                   </button>
-                  <button
-                    onClick={() => handleCancel("shutterstock", shutterstockText)}
-                    className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                  >
-                    <FaTimes className="text-xs" />
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => handleEdit("shutterstock", shutterstockText)}
-                  className="px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  <FaEdit className="text-xs" />
-                  Edit
-                </button>
+                )
               )}
               <button
                 onClick={() => copyToClipboard(getText("shutterstock", shutterstockText), "shutterstock")}
@@ -109,7 +113,7 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
             </div>
           </div>
           <div className="bg-gray-800 rounded p-3 border border-gray-700">
-            {editing === "shutterstock" ? (
+            {editing === "shutterstock" && isAuthenticated ? (
               <textarea
                 value={getText("shutterstock", shutterstockText)}
                 onChange={(e) => setEditedTexts({ ...editedTexts, shutterstock: e.target.value })}
@@ -132,31 +136,33 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
               Shutterstock Editorial
             </span>
             <div className="flex items-center gap-2">
-              {editing === "shutterstockEditorial" ? (
-                <>
+              {isAuthenticated && (
+                editing === "shutterstockEditorial" ? (
+                  <>
+                    <button
+                      onClick={() => handleSave("shutterstockEditorial")}
+                      className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaSave className="text-xs" />
+                      Save
+                    </button>
+                    <button
+                      onClick={() => handleCancel("shutterstockEditorial", shutterstockEditorialText)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaTimes className="text-xs" />
+                      Cancel
+                    </button>
+                  </>
+                ) : (
                   <button
-                    onClick={() => handleSave("shutterstockEditorial")}
-                    className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    onClick={() => handleEdit("shutterstockEditorial", shutterstockEditorialText)}
+                    className="px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                   >
-                    <FaSave className="text-xs" />
-                    Save
+                    <FaEdit className="text-xs" />
+                    Edit
                   </button>
-                  <button
-                    onClick={() => handleCancel("shutterstockEditorial", shutterstockEditorialText)}
-                    className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                  >
-                    <FaTimes className="text-xs" />
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => handleEdit("shutterstockEditorial", shutterstockEditorialText)}
-                  className="px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  <FaEdit className="text-xs" />
-                  Edit
-                </button>
+                )
               )}
               <button
                 onClick={() => copyToClipboard(getText("shutterstockEditorial", shutterstockEditorialText), "shutterstockEditorial")}
@@ -172,7 +178,7 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
             </div>
           </div>
           <div className="bg-gray-800 rounded p-3 border border-gray-700">
-            {editing === "shutterstockEditorial" ? (
+            {editing === "shutterstockEditorial" && isAuthenticated ? (
               <textarea
                 value={getText("shutterstockEditorial", shutterstockEditorialText)}
                 onChange={(e) => setEditedTexts({ ...editedTexts, shutterstockEditorial: e.target.value })}
@@ -195,31 +201,33 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
               Imago
             </span>
             <div className="flex items-center gap-2">
-              {editing === "imago" ? (
-                <>
+              {isAuthenticated && (
+                editing === "imago" ? (
+                  <>
+                    <button
+                      onClick={() => handleSave("imago")}
+                      className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaSave className="text-xs" />
+                      Save
+                    </button>
+                    <button
+                      onClick={() => handleCancel("imago", imagoText)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaTimes className="text-xs" />
+                      Cancel
+                    </button>
+                  </>
+                ) : (
                   <button
-                    onClick={() => handleSave("imago")}
-                    className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    onClick={() => handleEdit("imago", imagoText)}
+                    className="px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                   >
-                    <FaSave className="text-xs" />
-                    Save
+                    <FaEdit className="text-xs" />
+                    Edit
                   </button>
-                  <button
-                    onClick={() => handleCancel("imago", imagoText)}
-                    className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                  >
-                    <FaTimes className="text-xs" />
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => handleEdit("imago", imagoText)}
-                  className="px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  <FaEdit className="text-xs" />
-                  Edit
-                </button>
+                )
               )}
               <button
                 onClick={() => copyToClipboard(getText("imago", imagoText), "imago")}
@@ -235,7 +243,7 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
             </div>
           </div>
           <div className="bg-gray-800 rounded p-3 border border-gray-700">
-            {editing === "imago" ? (
+            {editing === "imago" && isAuthenticated ? (
               <textarea
                 value={getText("imago", imagoText)}
                 onChange={(e) => setEditedTexts({ ...editedTexts, imago: e.target.value })}
