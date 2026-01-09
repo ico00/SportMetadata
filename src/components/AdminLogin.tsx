@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { FaLock, FaEye, FaEyeOff } from "react-icons/fa";
+import { FaLock, FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa6";
 
 export default function AdminLogin() {
   const { login, isLocalhost } = useAuth();
@@ -71,7 +72,7 @@ export default function AdminLogin() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
             >
-              {showPassword ? <FaEyeOff className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
+              {showPassword ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
             </button>
           </div>
         </div>
