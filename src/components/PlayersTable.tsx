@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Player } from "../types";
+import { useAuth } from "../context/AuthContext";
 import { 
   FaUser, FaEdit, FaTrash, FaCheck, FaTimes, 
   FaBroom, FaExchangeAlt, FaHashtag, FaTag, 
@@ -23,6 +24,7 @@ export default function PlayersTable({
   onSwapNames,
   onCleanNames,
 }: PlayersTableProps) {
+  const { isAuthenticated } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<Partial<Player>>({});
 
@@ -111,7 +113,7 @@ export default function PlayersTable({
         </div>
         {players.length > 0 && (
           <div className="flex space-x-2">
-            {onCleanNames && (
+            {isAuthenticated && onCleanNames && (
               <button
                 onClick={onCleanNames}
                 className="px-3 py-1.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
@@ -121,7 +123,7 @@ export default function PlayersTable({
                 Clean Characters
               </button>
             )}
-            {onSwapNames && (
+            {isAuthenticated && onSwapNames && (
               <button
                 onClick={onSwapNames}
                 className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
@@ -166,7 +168,9 @@ export default function PlayersTable({
                   </span>
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Status</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300 whitespace-nowrap" style={{ width: '1%' }}>Actions</th>
+                {isAuthenticated && (
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300 whitespace-nowrap" style={{ width: '1%' }}>Actions</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -286,24 +290,26 @@ export default function PlayersTable({
                           <FaExclamationCircle className="text-red-400 inline" />
                         )}
                       </td>
-                      <td className="py-2 px-4 whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => startEdit(player)}
-                            className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
-                          >
-                            <FaEdit className="text-xs" />
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => onDeletePlayer(player.id)}
-                            className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
-                          >
-                            <FaTrash className="text-xs" />
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+                      {isAuthenticated && (
+                        <td className="py-2 px-4 whitespace-nowrap">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => startEdit(player)}
+                              className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
+                            >
+                              <FaEdit className="text-xs" />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => onDeletePlayer(player.id)}
+                              className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
+                            >
+                              <FaTrash className="text-xs" />
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </>
                   )}
                 </tr>

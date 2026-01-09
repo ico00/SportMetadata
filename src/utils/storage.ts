@@ -9,16 +9,21 @@ let isWebWithServer = false;
 let serverCheckDone = false;
 
 async function checkServerAvailable(): Promise<boolean> {
-  if (serverCheckDone) return isWebWithServer;
+  if (serverCheckDone) {
+    console.log(`🔍 Server check already done: ${isWebWithServer}`);
+    return isWebWithServer;
+  }
   
   if (typeof window === 'undefined' || isTauri) {
+    console.log('🔍 Skipping server check (Tauri or SSR)');
     serverCheckDone = true;
     return false;
   }
   
+  console.log('🔍 Checking if server is available...');
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout (increased)
     
     const response = await fetch('/api/sports', { 
       method: 'GET',
@@ -27,7 +32,9 @@ async function checkServerAvailable(): Promise<boolean> {
     
     clearTimeout(timeoutId);
     isWebWithServer = response.ok;
+    console.log(`🔍 Server check result: ${isWebWithServer} (status: ${response.status})`);
   } catch (error) {
+    console.log(`🔍 Server check failed:`, error);
     isWebWithServer = false;
   }
   
@@ -62,6 +69,12 @@ async function getTauriInvoke() {
 // Helper function for web API calls
 async function apiCall<T>(endpoint: string, method: string = 'GET', body?: any): Promise<T | null> {
   try {
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log(`🌐 API ${method} ${url}`, body ? { body } : '');
+    
+    // Get auth token from localStorage
+    const token = localStorage.getItem('adminToken');
+    
     const options: RequestInit = {
       method,
       headers: {
@@ -69,17 +82,38 @@ async function apiCall<T>(endpoint: string, method: string = 'GET', body?: any):
       },
     };
     
+    // Add auth token if available (for POST, PUT, DELETE requests)
+    if (token && (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
+      options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+      };
+    }
+    
     if (body) {
       options.body = JSON.stringify(body);
     }
     
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    const response = await fetch(url, options);
+    console.log(`📡 API Response for ${url}:`, response.status, response.statusText);
+    
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ API call failed for ${url}:`, response.status, errorText);
+      
+      // If unauthorized, clear token
+      if (response.status === 401) {
+        localStorage.removeItem('adminToken');
+      }
+      
       throw new Error(`API call failed: ${response.statusText}`);
     }
-    return await response.json();
+    
+    const data = await response.json();
+    console.log(`✅ API success for ${url}:`, Array.isArray(data) ? `${data.length} items` : 'data received');
+    return data;
   } catch (error) {
-    console.error(`API call error for ${endpoint}:`, error);
+    console.error(`❌ API call error for ${endpoint}:`, error);
     return null;
   }
 }
@@ -90,7 +124,7 @@ export async function loadSports(): Promise<Sport[]> {
     if (isTauri) {
       const invoke = await getTauriInvoke();
       if (!invoke) return [];
-      const data = await invoke<string>("read_file", { path: SPORTS_FILE });
+      const data = await (invoke as any)("read_file", { path: SPORTS_FILE }) as string;
       return JSON.parse(data || "[]");
     } else {
       // Check if server is available
@@ -101,8 +135,11 @@ export async function loadSports(): Promise<Sport[]> {
         return data || [];
       } else {
         // Fallback to localStorage for web without server
+        console.log('📦 Using localStorage fallback for sports');
         const data = localStorage.getItem(SPORTS_KEY);
-        return JSON.parse(data || "[]");
+        const parsed = JSON.parse(data || "[]");
+        console.log(`📦 Loaded ${parsed.length} sports from localStorage`);
+        return parsed;
       }
     }
   } catch (error) {
@@ -147,7 +184,7 @@ export async function loadMatches(): Promise<Match[]> {
     if (isTauri) {
       const invoke = await getTauriInvoke();
       if (!invoke) return [];
-      const data = await invoke<string>("read_file", { path: MATCHES_FILE });
+      const data = await (invoke as any)("read_file", { path: MATCHES_FILE }) as string;
       return JSON.parse(data || "[]");
     } else {
       // Check if server is available
@@ -203,7 +240,7 @@ export async function loadTeams(): Promise<Team[]> {
     if (isTauri) {
       const invoke = await getTauriInvoke();
       if (!invoke) return [];
-      const data = await invoke<string>("read_file", { path: TEAMS_FILE });
+      const data = await (invoke as any)("read_file", { path: TEAMS_FILE }) as string;
       return JSON.parse(data || "[]");
     } else {
       // Check if server is available
@@ -259,7 +296,7 @@ export async function loadPlayers(teamId: string): Promise<Player[]> {
       const invoke = await getTauriInvoke();
       if (!invoke) return [];
       const fileName = `players-${teamId}.json`;
-      const data = await invoke<string>("read_file", { path: fileName });
+      const data = await (invoke as any)("read_file", { path: fileName }) as string;
       return JSON.parse(data || "[]");
     } else {
       // Check if server is available

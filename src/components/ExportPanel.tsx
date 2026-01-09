@@ -1,5 +1,5 @@
 import { Player, Team } from "../types";
-import { FaFileExport, FaCheckCircle, FaExclamationCircle, FaInfoCircle, FaUsers } from "react-icons/fa";
+import { FaFileExport } from "react-icons/fa";
 
 interface ExportPanelProps {
   players: Player[];

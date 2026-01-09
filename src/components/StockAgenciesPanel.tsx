@@ -1,5 +1,5 @@
 import { Match, Team } from "../types";
-import { stockAgencies, formatForShutterstock, formatForShutterstockEditorial, formatForImago, StockAgency } from "../utils/stockAgencies";
+import { formatForShutterstock, formatForShutterstockEditorial, formatForImago } from "../utils/stockAgencies";
 import { FaCopy, FaImage, FaCheck, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 
@@ -33,11 +33,11 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
     }
   };
 
-  const handleSave = (key: string) => {
+  const handleSave = (_key: string) => {
     setEditing(null);
   };
 
-  const handleCancel = (key: string, originalText: string) => {
+  const handleCancel = (key: string, _originalText: string) => {
     setEditing(null);
     const newEditedTexts = { ...editedTexts };
     delete newEditedTexts[key];

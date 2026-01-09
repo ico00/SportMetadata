@@ -13,13 +13,16 @@ import PlayersTable from "./components/PlayersTable";
 import ExportPanel from "./components/ExportPanel";
 import StockAgenciesPanel from "./components/StockAgenciesPanel";
 import DatePicker from "./components/DatePicker";
+import AdminLogin from "./components/AdminLogin";
+import { useAuth } from "./context/AuthContext";
 import { 
   FaFutbol, FaPlus, FaTrash, 
   FaCalendarAlt, FaMapMarkerAlt, FaFlag, FaFileAlt,
-  FaUsers, FaTag, FaBuilding
+  FaUsers, FaTag, FaBuilding, FaSignOutAlt
 } from "react-icons/fa";
 
 function App() {
+  const { isAuthenticated, logout } = useAuth();
   const [sports, setSports] = useState<Sport[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -33,9 +36,33 @@ function App() {
 
   // Load initial data
   useEffect(() => {
-    loadSports().then(setSports);
-    loadMatches().then(setMatches);
-    loadTeams().then(setTeams);
+    console.log('🔄 Loading initial data...');
+    loadSports()
+      .then((data) => {
+        console.log('✅ Loaded sports:', data);
+        setSports(data);
+      })
+      .catch((error) => {
+        console.error('❌ Error loading sports:', error);
+      });
+    
+    loadMatches()
+      .then((data) => {
+        console.log('✅ Loaded matches:', data);
+        setMatches(data);
+      })
+      .catch((error) => {
+        console.error('❌ Error loading matches:', error);
+      });
+    
+    loadTeams()
+      .then((data) => {
+        console.log('✅ Loaded teams:', data);
+        setTeams(data);
+      })
+      .catch((error) => {
+        console.error('❌ Error loading teams:', error);
+      });
   }, []);
 
   // Filter matches by sport
@@ -426,15 +453,29 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
       <header className="bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-600 px-6 py-4 shadow-lg">
-        <div className="flex items-center gap-3 animate-fade-in">
-          <FaFutbol className="text-3xl text-blue-400 animate-bounce-subtle" />
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            Photo Mechanic Team TXT Generator
-          </h1>
+        <div className="flex items-center justify-between animate-fade-in">
+          <div className="flex items-center gap-3">
+            <FaFutbol className="text-3xl text-blue-400 animate-bounce-subtle" />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              Photo Mechanic Team TXT Generator
+            </h1>
+          </div>
+          {isAuthenticated && (
+            <button
+              onClick={logout}
+              className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+            >
+              <FaSignOutAlt className="text-sm" />
+              Logout
+            </button>
+          )}
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-6 space-y-6">
+        {/* Admin Login */}
+        {!isAuthenticated && <AdminLogin />}
+        
         {/* Sport Selection */}
         <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-blue-500/50 transition-all duration-300 animate-slide-up">
           <div className="flex items-center justify-between mb-4">
@@ -442,13 +483,15 @@ function App() {
               <FaFutbol className="text-xl text-blue-400" />
               <h2 className="text-xl font-semibold">Sport</h2>
             </div>
-            <button
-              onClick={handleCreateSport}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-            >
-              <FaPlus className="text-sm" />
-              New Sport
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={handleCreateSport}
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+              >
+                <FaPlus className="text-sm" />
+                New Sport
+              </button>
+            )}
           </div>
 
           {currentSport && (
@@ -458,13 +501,15 @@ function App() {
                   <FaFutbol className="text-blue-400" />
                   {currentSport.name}
                 </h3>
-                <button
-                  onClick={() => handleDeleteSport(currentSport.id)}
-                  className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  <FaTrash className="text-xs" />
-                  Delete
-                </button>
+                {isAuthenticated && (
+                  <button
+                    onClick={() => handleDeleteSport(currentSport.id)}
+                    className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                  >
+                    <FaTrash className="text-xs" />
+                    Delete
+                  </button>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Sport Name</label>
@@ -510,13 +555,15 @@ function App() {
                 <FaCalendarAlt className="text-xl text-green-400" />
                 <h2 className="text-xl font-semibold">Match</h2>
               </div>
-              <button
-                onClick={handleCreateMatch}
-                className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-              >
-                <FaPlus className="text-sm" />
-                New Match
-              </button>
+              {isAuthenticated && (
+                <button
+                  onClick={handleCreateMatch}
+                  className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                >
+                  <FaPlus className="text-sm" />
+                  New Match
+                </button>
+              )}
             </div>
 
             {currentMatch && (
@@ -526,13 +573,15 @@ function App() {
                     <FaFileAlt className="text-green-400" />
                     {currentMatch.description || "New match"}
                   </h3>
-                  <button
-                    onClick={() => handleDeleteMatch(currentMatch.id)}
-                    className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                  >
-                    <FaTrash className="text-xs" />
-                    Delete
-                  </button>
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => handleDeleteMatch(currentMatch.id)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaTrash className="text-xs" />
+                      Delete
+                    </button>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
@@ -642,13 +691,15 @@ function App() {
                 <FaUsers className="text-xl text-yellow-400" />
                 <h2 className="text-xl font-semibold">Team</h2>
               </div>
-              <button
-                onClick={handleCreateTeam}
-                className="px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-              >
-                <FaPlus className="text-sm" />
-                New Team
-              </button>
+              {isAuthenticated && (
+                <button
+                  onClick={handleCreateTeam}
+                  className="px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                >
+                  <FaPlus className="text-sm" />
+                  New Team
+                </button>
+              )}
             </div>
 
             {currentTeam && (
@@ -658,13 +709,15 @@ function App() {
                     <FaUsers className="text-yellow-400" />
                     {currentTeam.name}
                   </h3>
-                  <button
-                    onClick={() => handleDeleteTeam(currentTeam.id)}
-                    className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                  >
-                    <FaTrash className="text-xs" />
-                    Delete
-                  </button>
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => handleDeleteTeam(currentTeam.id)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    >
+                      <FaTrash className="text-xs" />
+                      Delete
+                    </button>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>

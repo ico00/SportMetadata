@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { FaPaste, FaKeyboard, FaCheck, FaPlus } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 interface InputSectionProps {
   onParseText: (text: string) => void;
 }
 
 export default function InputSection({ onParseText }: InputSectionProps) {
+  const { isAuthenticated } = useAuth();
   const [inputText, setInputText] = useState("");
   const [activeTab, setActiveTab] = useState<"paste" | "manual">("paste");
+
+  // Hide input section if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const handlePaste = () => {
     if (inputText.trim()) {
