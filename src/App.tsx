@@ -18,11 +18,11 @@ import { useAuth } from "./context/AuthContext";
 import { 
   FaFutbol, FaPlus, FaTrash, 
   FaCalendarAlt, FaMapMarkerAlt, FaFlag, FaFileAlt,
-  FaUsers, FaTag, FaBuilding, FaSignOutAlt
+  FaUsers, FaTag, FaBuilding, FaSignOutAlt, FaLock
 } from "react-icons/fa";
 
 function App() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, isLocalhost } = useAuth();
   const [sports, setSports] = useState<Sport[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -33,6 +33,7 @@ function App() {
   
   const [players, setPlayers] = useState<Player[]>([]);
   const [teamCode, setTeamCode] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Load initial data
   useEffect(() => {
@@ -460,21 +461,39 @@ function App() {
               Photo Mechanic Team TXT Generator
             </h1>
           </div>
-          {isAuthenticated && (
-            <button
-              onClick={logout}
-              className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-            >
-              <FaSignOutAlt className="text-sm" />
-              Logout
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {!isAuthenticated && !isLocalhost && (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                title="Admin Login"
+              >
+                <FaLock className="text-sm" />
+                <span className="hidden sm:inline">Admin</span>
+              </button>
+            )}
+            {isAuthenticated && (
+              <button
+                onClick={logout}
+                className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+              >
+                <FaSignOutAlt className="text-sm" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            )}
+            {isLocalhost && (
+              <div className="px-3 py-1.5 bg-green-500/20 border border-green-500/50 rounded-lg flex items-center gap-2">
+                <FaLock className="text-sm text-green-400" />
+                <span className="text-sm text-green-400 font-medium hidden sm:inline">Admin Mode</span>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-6 space-y-6">
-        {/* Admin Login */}
-        {!isAuthenticated && <AdminLogin />}
+        {/* Admin Login Modal */}
+        <AdminLogin isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
         
         {/* Sport Selection */}
         <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-blue-500/50 transition-all duration-300 animate-slide-up">
