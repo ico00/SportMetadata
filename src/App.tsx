@@ -530,17 +530,26 @@ function App() {
                   </button>
                 )}
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Sport Name</label>
-                <input
-                  type="text"
-                  value={currentSport.name}
-                  onChange={(e) =>
-                    handleUpdateSport({ ...currentSport, name: e.target.value })
-                  }
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              {isAuthenticated ? (
+                <div>
+                  <label className="block text-sm font-medium mb-1">Sport Name</label>
+                  <input
+                    type="text"
+                    value={currentSport.name}
+                    onChange={(e) =>
+                      handleUpdateSport({ ...currentSport, name: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-400">Sport Name</label>
+                  <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                    {currentSport.name}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -602,80 +611,134 @@ function App() {
                     </button>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
-                      <FaCalendarAlt className="text-gray-400" />
-                      Date
-                    </label>
-                    <DatePicker
-                      value={currentMatch.date}
-                      onChange={(date) =>
-                        handleUpdateMatch({ ...currentMatch, date })
-                      }
-                    />
+                {isAuthenticated ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                          <FaCalendarAlt className="text-gray-400" />
+                          Date
+                        </label>
+                        <DatePicker
+                          value={currentMatch.date}
+                          onChange={(date) =>
+                            handleUpdateMatch({ ...currentMatch, date })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                          <FaMapMarkerAlt className="text-gray-400" />
+                          City
+                        </label>
+                        <input
+                          type="text"
+                          value={currentMatch.city || ""}
+                          onChange={(e) =>
+                            handleUpdateMatch({ ...currentMatch, city: e.target.value })
+                          }
+                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                          placeholder="e.g. Zagreb"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                          <FaFlag className="text-gray-400" />
+                          Country
+                        </label>
+                        <input
+                          type="text"
+                          value={currentMatch.country || ""}
+                          onChange={(e) =>
+                            handleUpdateMatch({ ...currentMatch, country: e.target.value })
+                          }
+                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                          placeholder="e.g. Croatia"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                          <FaBuilding className="text-gray-400" />
+                          Venue
+                        </label>
+                        <input
+                          type="text"
+                          value={currentMatch.venue || ""}
+                          onChange={(e) =>
+                            handleUpdateMatch({ ...currentMatch, venue: e.target.value })
+                          }
+                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                          placeholder="e.g. Arena Zagreb"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                        <FaFileAlt className="text-gray-400" />
+                        Description
+                      </label>
+                      <input
+                        type="text"
+                        value={currentMatch.description}
+                        onChange={(e) =>
+                          handleUpdateMatch({ ...currentMatch, description: e.target.value })
+                        }
+                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                        placeholder="e.g. Final, Semi-final, etc."
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                          <FaCalendarAlt className="text-gray-400" />
+                          Date
+                        </label>
+                        <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                          {currentMatch.date || "Not set"}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                          <FaMapMarkerAlt className="text-gray-400" />
+                          City
+                        </label>
+                        <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                          {currentMatch.city || "Not set"}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                          <FaFlag className="text-gray-400" />
+                          Country
+                        </label>
+                        <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                          {currentMatch.country || "Not set"}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                          <FaBuilding className="text-gray-400" />
+                          Venue
+                        </label>
+                        <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                          {currentMatch.venue || "Not set"}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                        <FaFileAlt className="text-gray-400" />
+                        Description
+                      </label>
+                      <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                        {currentMatch.description || "Not set"}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-gray-400" />
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      value={currentMatch.city || ""}
-                      onChange={(e) =>
-                        handleUpdateMatch({ ...currentMatch, city: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                      placeholder="e.g. Zagreb"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
-                      <FaFlag className="text-gray-400" />
-                      Country
-                    </label>
-                    <input
-                      type="text"
-                      value={currentMatch.country || ""}
-                      onChange={(e) =>
-                        handleUpdateMatch({ ...currentMatch, country: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                      placeholder="e.g. Croatia"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
-                      <FaBuilding className="text-gray-400" />
-                      Venue
-                    </label>
-                    <input
-                      type="text"
-                      value={currentMatch.venue || ""}
-                      onChange={(e) =>
-                        handleUpdateMatch({ ...currentMatch, venue: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                      placeholder="e.g. Arena Zagreb"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center gap-2">
-                    <FaFileAlt className="text-gray-400" />
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    value={currentMatch.description}
-                    onChange={(e) =>
-                      handleUpdateMatch({ ...currentMatch, description: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                    placeholder="e.g. Final, Semi-final, etc."
-                  />
-                </div>
+                )}
               </div>
             )}
 
@@ -738,38 +801,61 @@ function App() {
                     </button>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
-                      <FaUsers className="text-gray-400" />
-                      Team Name
-                    </label>
-                    <input
-                      type="text"
-                      value={currentTeam.name}
-                      onChange={(e) =>
-                        handleUpdateTeam({ ...currentTeam, name: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
-                    />
+                {isAuthenticated ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                        <FaUsers className="text-gray-400" />
+                        Team Name
+                      </label>
+                      <input
+                        type="text"
+                        value={currentTeam.name}
+                        onChange={(e) =>
+                          handleUpdateTeam({ ...currentTeam, name: e.target.value })
+                        }
+                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                        <FaTag className="text-gray-400" />
+                        Team Code
+                      </label>
+                      <input
+                        type="text"
+                        value={teamCode}
+                        onChange={(e) => {
+                          setTeamCode(e.target.value);
+                          handleUpdateTeam({ ...currentTeam, team_code: e.target.value });
+                        }}
+                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all uppercase"
+                        placeholder="e.g. HRV, USA, etc."
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
-                      <FaTag className="text-gray-400" />
-                      Team Code
-                    </label>
-                    <input
-                      type="text"
-                      value={teamCode}
-                      onChange={(e) => {
-                        setTeamCode(e.target.value);
-                        handleUpdateTeam({ ...currentTeam, team_code: e.target.value });
-                      }}
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all uppercase"
-                      placeholder="e.g. HRV, USA, etc."
-                    />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                        <FaUsers className="text-gray-400" />
+                        Team Name
+                      </label>
+                      <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                        {currentTeam.name}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                        <FaTag className="text-gray-400" />
+                        Team Code
+                      </label>
+                      <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300 uppercase">
+                        {teamCode || "Not set"}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
