@@ -12,6 +12,12 @@ import InputSection from "./components/InputSection";
 import PlayersTable from "./components/PlayersTable";
 import ExportPanel from "./components/ExportPanel";
 import StockAgenciesPanel from "./components/StockAgenciesPanel";
+import DatePicker from "./components/DatePicker";
+import { 
+  FaFutbol, FaPlus, FaTrash, 
+  FaCalendarAlt, FaMapMarkerAlt, FaFlag, FaFileAlt,
+  FaUsers, FaTag, FaBuilding
+} from "react-icons/fa";
 
 function App() {
   const [sports, setSports] = useState<Sport[]>([]);
@@ -161,6 +167,7 @@ function App() {
       date: new Date().toISOString().split('T')[0],
       city: "",
       country: "",
+      venue: "",
       description: "",
       created_at: new Date().toISOString(),
     };
@@ -418,31 +425,44 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
-        <h1 className="text-2xl font-bold">Photo Mechanic Team TXT Generator</h1>
+      <header className="bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-600 px-6 py-4 shadow-lg">
+        <div className="flex items-center gap-3 animate-fade-in">
+          <FaFutbol className="text-3xl text-blue-400 animate-bounce-subtle" />
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            Photo Mechanic Team TXT Generator
+          </h1>
+        </div>
       </header>
 
       <div className="container mx-auto px-6 py-6 space-y-6">
         {/* Sport Selection */}
-        <div className="bg-gray-800 rounded-lg p-4">
+        <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-blue-500/50 transition-all duration-300 animate-slide-up">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Sport</h2>
+            <div className="flex items-center gap-2">
+              <FaFutbol className="text-xl text-blue-400" />
+              <h2 className="text-xl font-semibold">Sport</h2>
+            </div>
             <button
               onClick={handleCreateSport}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
             >
+              <FaPlus className="text-sm" />
               New Sport
             </button>
           </div>
 
           {currentSport && (
-            <div className="space-y-3 mb-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-blue-400">{currentSport.name}</h3>
+            <div className="space-y-3 mb-4 animate-fade-in">
+              <div className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
+                <h3 className="text-lg font-semibold text-blue-400 flex items-center gap-2">
+                  <FaFutbol className="text-blue-400" />
+                  {currentSport.name}
+                </h3>
                 <button
                   onClick={() => handleDeleteSport(currentSport.id)}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-sm"
+                  className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                 >
+                  <FaTrash className="text-xs" />
                   Delete
                 </button>
               </div>
@@ -484,74 +504,107 @@ function App() {
 
         {/* Match Selection */}
         {currentSport && (
-          <div className="bg-gray-800 rounded-lg p-4">
+          <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-green-500/50 transition-all duration-300 animate-slide-up">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Match</h2>
+              <div className="flex items-center gap-2">
+                <FaCalendarAlt className="text-xl text-green-400" />
+                <h2 className="text-xl font-semibold">Match</h2>
+              </div>
               <button
                 onClick={handleCreateMatch}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
               >
+                <FaPlus className="text-sm" />
                 New Match
               </button>
             </div>
 
             {currentMatch && (
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-green-400">
+              <div className="space-y-3 mb-4 animate-fade-in">
+                <div className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-green-400 flex items-center gap-2">
+                    <FaFileAlt className="text-green-400" />
                     {currentMatch.description || "New match"}
                   </h3>
                   <button
                     onClick={() => handleDeleteMatch(currentMatch.id)}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-sm"
+                    className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                   >
+                    <FaTrash className="text-xs" />
                     Delete
                   </button>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date</label>
-                  <input
-                    type="date"
-                    value={currentMatch.date}
-                    onChange={(e) =>
-                      handleUpdateMatch({ ...currentMatch, date: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                      <FaCalendarAlt className="text-gray-400" />
+                      Date
+                    </label>
+                    <DatePicker
+                      value={currentMatch.date}
+                      onChange={(date) =>
+                        handleUpdateMatch({ ...currentMatch, date })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-gray-400" />
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      value={currentMatch.city || ""}
+                      onChange={(e) =>
+                        handleUpdateMatch({ ...currentMatch, city: e.target.value })
+                      }
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                      placeholder="e.g. Zagreb"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                      <FaFlag className="text-gray-400" />
+                      Country
+                    </label>
+                    <input
+                      type="text"
+                      value={currentMatch.country || ""}
+                      onChange={(e) =>
+                        handleUpdateMatch({ ...currentMatch, country: e.target.value })
+                      }
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                      placeholder="e.g. Croatia"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                      <FaBuilding className="text-gray-400" />
+                      Venue
+                    </label>
+                    <input
+                      type="text"
+                      value={currentMatch.venue || ""}
+                      onChange={(e) =>
+                        handleUpdateMatch({ ...currentMatch, venue: e.target.value })
+                      }
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                      placeholder="e.g. Arena Zagreb"
+                    />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">City</label>
-                  <input
-                    type="text"
-                    value={currentMatch.city || ""}
-                    onChange={(e) =>
-                      handleUpdateMatch({ ...currentMatch, city: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. Zagreb"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Country</label>
-                  <input
-                    type="text"
-                    value={currentMatch.country || ""}
-                    onChange={(e) =>
-                      handleUpdateMatch({ ...currentMatch, country: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. Croatia"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Description</label>
+                  <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                    <FaFileAlt className="text-gray-400" />
+                    Description
+                  </label>
                   <input
                     type="text"
                     value={currentMatch.description}
                     onChange={(e) =>
                       handleUpdateMatch({ ...currentMatch, description: e.target.value })
                     }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
                     placeholder="e.g. Final, Semi-final, etc."
                   />
                 </div>
@@ -583,51 +636,67 @@ function App() {
 
         {/* Team Selection */}
         {currentMatch && (
-          <div className="bg-gray-800 rounded-lg p-4">
+          <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-yellow-500/50 transition-all duration-300 animate-slide-up">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Team</h2>
+              <div className="flex items-center gap-2">
+                <FaUsers className="text-xl text-yellow-400" />
+                <h2 className="text-xl font-semibold">Team</h2>
+              </div>
               <button
                 onClick={handleCreateTeam}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
               >
+                <FaPlus className="text-sm" />
                 New Team
               </button>
             </div>
 
             {currentTeam && (
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-yellow-400">{currentTeam.name}</h3>
+              <div className="space-y-3 mb-4 animate-fade-in">
+                <div className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-yellow-400 flex items-center gap-2">
+                    <FaUsers className="text-yellow-400" />
+                    {currentTeam.name}
+                  </h3>
                   <button
                     onClick={() => handleDeleteTeam(currentTeam.id)}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-sm"
+                    className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                   >
+                    <FaTrash className="text-xs" />
                     Delete
                   </button>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Team Name</label>
-                  <input
-                    type="text"
-                    value={currentTeam.name}
-                    onChange={(e) =>
-                      handleUpdateTeam({ ...currentTeam, name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Team Code</label>
-                  <input
-                    type="text"
-                    value={teamCode}
-                    onChange={(e) => {
-                      setTeamCode(e.target.value);
-                      handleUpdateTeam({ ...currentTeam, team_code: e.target.value });
-                    }}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="npr. HRV, USA, etc."
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                      <FaUsers className="text-gray-400" />
+                      Team Name
+                    </label>
+                    <input
+                      type="text"
+                      value={currentTeam.name}
+                      onChange={(e) =>
+                        handleUpdateTeam({ ...currentTeam, name: e.target.value })
+                      }
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 flex items-center gap-2">
+                      <FaTag className="text-gray-400" />
+                      Team Code
+                    </label>
+                    <input
+                      type="text"
+                      value={teamCode}
+                      onChange={(e) => {
+                        setTeamCode(e.target.value);
+                        handleUpdateTeam({ ...currentTeam, team_code: e.target.value });
+                      }}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all uppercase"
+                      placeholder="e.g. HRV, USA, etc."
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -657,7 +726,7 @@ function App() {
 
         {/* Stock Agencies Section */}
         {currentMatch && (
-          <StockAgenciesPanel match={currentMatch} />
+          <StockAgenciesPanel match={currentMatch} teams={currentMatchTeams} />
         )}
 
         {/* Players Section */}

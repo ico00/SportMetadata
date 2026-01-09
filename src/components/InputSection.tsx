@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaPaste, FaKeyboard, FaCheck, FaPlus } from "react-icons/fa";
 
 interface InputSectionProps {
   onParseText: (text: string) => void;
@@ -23,28 +24,33 @@ export default function InputSection({ onParseText }: InputSectionProps) {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-4">
-      <h2 className="text-xl font-semibold mb-4">Player Input</h2>
+    <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-indigo-500/50 transition-all duration-300 animate-slide-up">
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <FaKeyboard className="text-indigo-400" />
+        Player Input
+      </h2>
 
       <div className="flex space-x-2 mb-4">
         <button
           onClick={() => setActiveTab("paste")}
-          className={`px-4 py-2 rounded-lg transition-colors ${
+          className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 ${
             activeTab === "paste"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg scale-105"
+              : "bg-gray-700 text-gray-300 hover:bg-gray-600 shadow-md hover:shadow-lg transform hover:scale-105"
           }`}
         >
+          <FaPaste className="text-sm" />
           Paste Text
         </button>
         <button
           onClick={() => setActiveTab("manual")}
-          className={`px-4 py-2 rounded-lg transition-colors ${
+          className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 ${
             activeTab === "manual"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg scale-105"
+              : "bg-gray-700 text-gray-300 hover:bg-gray-600 shadow-md hover:shadow-lg transform hover:scale-105"
           }`}
         >
+          <FaKeyboard className="text-sm" />
           Manual Entry
         </button>
       </div>
@@ -59,8 +65,9 @@ export default function InputSection({ onParseText }: InputSectionProps) {
           />
           <button
             onClick={handlePaste}
-            className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+            className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 font-semibold"
           >
+            <FaCheck />
             Parse and Add
           </button>
         </div>
@@ -82,8 +89,9 @@ export default function InputSection({ onParseText }: InputSectionProps) {
           />
           <button
             onClick={handleManualAdd}
-            className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+            className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 font-semibold"
           >
+            <FaPlus />
             Add Player
           </button>
         </div>

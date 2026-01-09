@@ -1,4 +1,5 @@
 import { Player, Team } from "../types";
+import { FaFileExport, FaCheckCircle, FaExclamationCircle, FaInfoCircle, FaUsers } from "react-icons/fa";
 
 interface ExportPanelProps {
   players: Player[];
@@ -42,8 +43,11 @@ export default function ExportPanel({
   const allTeamsCount = allTeams?.length || 0;
 
   return (
-    <div className="bg-gray-800 rounded-lg p-4">
-      <h2 className="text-xl font-semibold mb-4">Export</h2>
+    <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-emerald-500/50 transition-all duration-300 animate-slide-up">
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <FaFileExport className="text-emerald-400" />
+        Export
+      </h2>
 
       <div className="space-y-4">
         <div className="bg-gray-700 rounded-lg p-3">
@@ -112,8 +116,9 @@ export default function ExportPanel({
             <button
               onClick={onExport}
               disabled={!teamCode || validPlayers.length === 0}
-              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors font-semibold"
+              className="w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none font-semibold"
             >
+              <FaFileExport />
               {allTeamsCount > 1 
                 ? `Export All Teams (${allTeamsCount})` 
                 : "Export TXT File"}

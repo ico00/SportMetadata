@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { Player } from "../types";
+import { 
+  FaUser, FaEdit, FaTrash, FaCheck, FaTimes, 
+  FaBroom, FaExchangeAlt, FaHashtag, FaTag, 
+  FaEye, FaCheckCircle, FaExclamationCircle
+} from "react-icons/fa";
 
 interface PlayersTableProps {
   players: Player[];
@@ -96,29 +101,34 @@ export default function PlayersTable({
   );
 
   return (
-    <div className="bg-gray-800 rounded-lg p-4">
+    <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-cyan-500/50 transition-all duration-300 animate-slide-up">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">
-          Players ({players.length})
-        </h2>
+        <div className="flex items-center gap-2">
+          <FaUser className="text-xl text-cyan-400" />
+          <h2 className="text-xl font-semibold">
+            Players <span className="text-cyan-400">({players.length})</span>
+          </h2>
+        </div>
         {players.length > 0 && (
           <div className="flex space-x-2">
             {onCleanNames && (
               <button
                 onClick={onCleanNames}
-                className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 rounded-lg transition-colors text-sm"
+                className="px-3 py-1.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                 title="Remove all diacritics (č, ć, ž, š, đ and others) from names"
               >
-                🧹 Clean Characters
+                <FaBroom className="text-xs" />
+                Clean Characters
               </button>
             )}
             {onSwapNames && (
               <button
                 onClick={onSwapNames}
-                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm"
+                className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                 title="Swap first name and last name for all players"
               >
-                🔄 Swap Name/Last Name
+                <FaExchangeAlt className="text-xs" />
+                Swap Name/Last Name
               </button>
             )}
           </div>
@@ -126,28 +136,47 @@ export default function PlayersTable({
       </div>
 
       {players.length === 0 ? (
-        <p className="text-gray-400">No players. Add players using the input above.</p>
+        <div className="text-center py-8 animate-fade-in">
+          <FaUser className="text-4xl text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-400">No players. Add players using the input above.</p>
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+        <div className="overflow-x-auto rounded-lg border border-gray-700">
+          <table className="border-collapse" style={{ width: '100%', tableLayout: 'auto' }}>
             <thead>
-              <tr className="border-b border-gray-700">
-                <th className="text-left py-2 px-3">Number</th>
-                <th className="text-left py-2 px-3">Team Code</th>
-                <th className="text-left py-2 px-3">First Name</th>
-                <th className="text-left py-2 px-3">Last Name</th>
-                <th className="text-left py-2 px-3">Preview</th>
-                <th className="text-left py-2 px-3">Status</th>
-                <th className="text-left py-2 px-3">Actions</th>
+              <tr className="border-b border-gray-700 bg-gray-700/50">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">
+                  <span className="flex items-center gap-2">
+                    <FaHashtag className="text-gray-400" />
+                    Number
+                  </span>
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">
+                  <span className="flex items-center gap-2">
+                    <FaTag className="text-gray-400" />
+                    Team Code
+                  </span>
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">First Name</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Last Name</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">
+                  <span className="flex items-center gap-2">
+                    <FaEye className="text-gray-400" />
+                    Preview
+                  </span>
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Status</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300 whitespace-nowrap" style={{ width: '1%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {sortedPlayers.map((player) => (
+              {sortedPlayers.map((player, index) => (
                 <tr
                   key={player.id}
-                  className={`border-b border-gray-700 ${
+                  className={`border-b border-gray-700 hover:bg-gray-700/30 transition-colors duration-150 ${
                     !player.valid ? "bg-red-900/20" : ""
-                  }`}
+                  } animate-slide-up`}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   {editingId === player.id ? (
                     <>
@@ -220,20 +249,22 @@ export default function PlayersTable({
                           : "-"}
                       </td>
                       <td className="py-2 px-3">
-                        <span className="text-green-400">✓</span>
+                        <FaCheckCircle className="text-green-400 inline" />
                       </td>
-                      <td className="py-2 px-3">
+                      <td className="py-2 px-4 whitespace-nowrap">
                         <div className="flex space-x-2">
                           <button
                             onClick={() => saveEdit(player.id)}
-                            className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-sm"
+                            className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
                           >
+                            <FaCheck className="text-xs" />
                             Save
                           </button>
                           <button
                             onClick={cancelEdit}
-                            className="px-2 py-1 bg-gray-600 hover:bg-gray-700 rounded text-sm"
+                            className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
                           >
+                            <FaTimes className="text-xs" />
                             Cancel
                           </button>
                         </div>
@@ -250,23 +281,25 @@ export default function PlayersTable({
                       </td>
                       <td className="py-2 px-3">
                         {player.valid ? (
-                          <span className="text-green-400">✓</span>
+                          <FaCheckCircle className="text-green-400 inline" />
                         ) : (
-                          <span className="text-red-400">✗</span>
+                          <FaExclamationCircle className="text-red-400 inline" />
                         )}
                       </td>
-                      <td className="py-2 px-3">
+                      <td className="py-2 px-4 whitespace-nowrap">
                         <div className="flex space-x-2">
                           <button
                             onClick={() => startEdit(player)}
-                            className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+                            className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
                           >
+                            <FaEdit className="text-xs" />
                             Edit
                           </button>
                           <button
                             onClick={() => onDeletePlayer(player.id)}
-                            className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-sm"
+                            className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded transition-all duration-200 text-sm flex items-center gap-1 shadow-md hover:shadow-lg transform hover:scale-105"
                           >
+                            <FaTrash className="text-xs" />
                             Delete
                           </button>
                         </div>

@@ -10,6 +10,7 @@ export interface Match {
   date: string;
   city: string;
   country: string;
+  venue: string;
   description: string;
   created_at: string;
 }
