@@ -1,10 +1,11 @@
-import { Player, Team } from "../types";
+import { Player, Team, Match } from "../types";
 import { FaFileExport } from "react-icons/fa";
 
 interface ExportPanelProps {
   players: Player[];
   teamCode: string;
   allTeams?: Team[];
+  match?: Match | null;
   onExport: () => void;
 }
 
@@ -12,6 +13,7 @@ export default function ExportPanel({
   players,
   teamCode,
   allTeams,
+  match,
   onExport,
 }: ExportPanelProps) {
   const validPlayers = players.filter((p) => p.valid);
@@ -41,6 +43,27 @@ export default function ExportPanel({
     );
 
   const allTeamsCount = allTeams?.length || 0;
+
+  // Generate filename based on match date and team names (same format as in export.ts)
+  // If exporting multiple teams, use match format: yyyy-mm-dd-Team1-Team2.txt
+  // If exporting single team, use: team-CODE.txt
+  const getExportFileName = (): string => {
+    // If there are multiple teams and we have match data, use match format
+    if (allTeamsCount > 1 && match && allTeams && allTeams.length > 0) {
+      const dateStr = match.date;
+      const teamNames = allTeams
+        .map((team) => team.name.replace(/\s+/g, '-'))
+        .join('-');
+      return `${dateStr}-${teamNames}.txt`;
+    }
+    // Single team export: team-CODE.txt
+    if (teamCode) {
+      return `team-${teamCode}.txt`;
+    }
+    return "team-CODE.txt";
+  };
+
+  const exportFileName = getExportFileName();
 
   return (
     <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-emerald-500/50 transition-all duration-300 animate-slide-up">
@@ -99,8 +122,8 @@ export default function ExportPanel({
             <div className="bg-gray-700 rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Export Preview:</span>
-                <span className="text-xs text-gray-400">
-                  {allTeamsCount > 1 ? "match-export.txt" : teamCode ? `team-${teamCode}.txt` : "team-CODE.txt"}
+                <span className="text-xs text-gray-400 font-mono">
+                  {exportFileName}
                 </span>
               </div>
               <pre className="text-xs text-gray-300 font-mono bg-gray-800 p-3 rounded overflow-x-auto max-h-60 overflow-y-auto">

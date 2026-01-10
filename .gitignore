@@ -30,5 +30,5 @@ dist-ssr
 # Tauri
 src-tauri/target
 
-# Data directory (JSON files)
-data/
+# Data directory (JSON files) - temporarily enabled for initial data seeding
+# data/

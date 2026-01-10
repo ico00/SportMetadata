@@ -1,0 +1,164 @@
+[
+  {
+    "id": "1767965844010-0",
+    "player_number": "1",
+    "first_name": "David",
+    "last_name": "SPATH",
+    "raw_input": "1 Spath DAVID",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-1",
+    "player_number": "3",
+    "first_name": "Nils",
+    "last_name": "LICHTLEIN",
+    "raw_input": "3 Lichtlein NILS",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-2",
+    "player_number": "4",
+    "first_name": "Johannes",
+    "last_name": "GOLLA",
+    "raw_input": "4 Golla JOHANNES",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-3",
+    "player_number": "5",
+    "first_name": "Miro",
+    "last_name": "SCHLUROFF",
+    "raw_input": "5 Schluroff MIRO",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-4",
+    "player_number": "13",
+    "first_name": "Matthes",
+    "last_name": "LANGHOFF",
+    "raw_input": "13 Langhoff MATTHES",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-5",
+    "player_number": "14",
+    "first_name": "Mathis",
+    "last_name": "HASELER",
+    "raw_input": "14 Haseler MATHIS",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-6",
+    "player_number": "15",
+    "first_name": "Juri",
+    "last_name": "KNORR",
+    "raw_input": "15 Knorr JURI",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-7",
+    "player_number": "17",
+    "first_name": "Lukas",
+    "last_name": "ZERBE",
+    "raw_input": "17 Zerbe LUKAS",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-8",
+    "player_number": "18",
+    "first_name": "Julian",
+    "last_name": "KOSTER",
+    "raw_input": "18 Koster JULIAN",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-9",
+    "player_number": "23",
+    "first_name": "Renars",
+    "last_name": "USCINS",
+    "raw_input": "23 Uscins RENARS",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-10",
+    "player_number": "30",
+    "first_name": "Tom",
+    "last_name": "KIESLER",
+    "raw_input": "30 Kiesler TOM",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-11",
+    "player_number": "32",
+    "first_name": "Franz",
+    "last_name": "SEMPER",
+    "raw_input": "32 Semper FRANZ",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-12",
+    "player_number": "33",
+    "first_name": "Andreas",
+    "last_name": "WOLFF",
+    "raw_input": "33 Wolff ANDREAS",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-13",
+    "player_number": "34",
+    "first_name": "Rune",
+    "last_name": "DAHMKE",
+    "raw_input": "34 Dahmke RUNE",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-14",
+    "player_number": "36",
+    "first_name": "Lukas",
+    "last_name": "MERTENS",
+    "raw_input": "36 Mertens LUKAS",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-15",
+    "player_number": "54",
+    "first_name": "Justus",
+    "last_name": "FISCHER",
+    "raw_input": "54 Fischer JUSTUS",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-16",
+    "player_number": "71",
+    "first_name": "Marko",
+    "last_name": "GRGIC",
+    "raw_input": "71 Grgic MARKO",
+    "valid": true,
+    "team_code": "g"
+  },
+  {
+    "id": "1767965844010-17",
+    "player_number": "80",
+    "first_name": "Jannik",
+    "last_name": "KOLBACHER",
+    "raw_input": "80 Kolbacher JANNIK",
+    "valid": true,
+    "team_code": "g"
+  }
+]

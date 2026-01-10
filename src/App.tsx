@@ -458,7 +458,7 @@ function App() {
           <div className="flex items-center gap-3">
             <FaFutbol className="text-3xl text-blue-400 animate-bounce-subtle" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Photo Mechanic Team TXT Generator
+              Sport Metadata Generator
             </h1>
           </div>
           <div className="flex items-center gap-3">
@@ -903,6 +903,7 @@ function App() {
               players={players}
               teamCode={teamCode}
               allTeams={currentMatchTeams}
+              match={currentMatch}
               onExport={handleExport}
             />
           </>

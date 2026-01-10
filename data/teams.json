@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1767965808884",
+    "match_id": "1767965775967",
+    "name": "Croatia",
+    "team_code": "c",
+    "created_at": "2026-01-09T13:36:48.884Z"
+  },
+  {
+    "id": "1767965827065",
+    "match_id": "1767965775967",
+    "name": "Germany",
+    "team_code": "g",
+    "created_at": "2026-01-09T13:37:07.065Z"
+  },
+  {
+    "id": "1768039964472",
+    "match_id": "1768039804918",
+    "name": "Dinamo",
+    "team_code": "d",
+    "created_at": "2026-01-10T10:12:44.472Z"
+  },
+  {
+    "id": "1768040121664",
+    "match_id": "1768039804918",
+    "name": "Real Club Celta",
+    "team_code": "c",
+    "created_at": "2026-01-10T10:15:21.664Z"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1767965775967",
+    "sport_id": "1767965767668",
+    "date": "2026-01-08",
+    "city": "Zagreb",
+    "country": "Croatia",
+    "description": "Friendly match between Croatia and Germany",
+    "created_at": "2026-01-09T13:36:15.967Z",
+    "venue": "Arena Zagreb"
+  },
+  {
+    "id": "1768039804918",
+    "sport_id": "1768039799937",
+    "date": "2025-11-05",
+    "city": "Zagreb",
+    "country": "Croatia",
+    "venue": "Maksimir stadium",
+    "description": "UEFA Europa League- Match day 4 - Dinamo VS Celta",
+    "created_at": "2026-01-10T10:10:04.918Z"
+  }
+]
