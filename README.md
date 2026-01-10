@@ -21,6 +21,7 @@ Desktop aplikacija za generisanje formatiranih TXT fajlova za Photo Mechanic cod
 - **Frontend**: React + TypeScript
 - **Styling**: Tailwind CSS
 - **Storage**: Lokalni JSON fajlovi
+- **PDF Parsing**: pdfjs-dist (PDF.js)
 
 ## Instalacija
 
@@ -81,8 +82,9 @@ Aplikacija koristi hijerarhijsku strukturu: **Sport → Utakmica → Momčad →
 2. **Kreirajte utakmicu**: Odaberite sport, zatim kliknite "Nova Utakmica" i unesite datum i opis
 3. **Kreirajte momčad**: Odaberite utakmicu, zatim kliknite "Nova Momčad" i unesite naziv i team code
 4. **Dodajte igrače**: 
-   - Zalijepite listu igrača u tekstualno polje ili
-   - Unesite igrače ručno jedan po jedan
+   - **Upload PDF**: Odaberite PDF datoteku s popisom igrača - aplikacija će automatski izvući i parsirati igrače
+   - **Zalijepite tekst**: Zalijepite listu igrača u tekstualno polje
+   - **Ručni unos**: Unesite igrače ručno jedan po jedan
 5. **Uredite podatke**: Kliknite na "Uredi" za bilo kojeg igrača da izmijenite podatke
 6. **Eksportujte**: Kliknite na "Eksportuj TXT Fajl" da generišete fajl za Photo Mechanic
 
@@ -106,9 +108,21 @@ Fajl je tab-separated i spreman za direktno korištenje u Photo Mechanic code re
 Aplikacija automatski prepoznaje sledeće formate:
 
 - `7 Ivan Horvat` - broj na početku
+- `A Ivan Horvat` - slovo na početku (za delegate)
 - `Ivan Horvat (7)` - broj u zagradama na kraju
+- `Ivan Horvat (A)` - slovo u zagradama
 - `7h Ivan Horvat` - broj sa sufiksom
 - `Ivan Horvat - 7` - broj nakon crtice
+
+### PDF Upload
+
+Aplikacija podržava automatsko učitavanje i parsiranje PDF datoteka s popisom igrača. Kada uploadate PDF:
+
+1. Aplikacija automatski izvlači tekst iz PDF-a
+2. Prepoznaje linije koje liče na formate igrača
+3. Automatski parsira i dodaje igrače u popis
+
+**Napomena**: Kvaliteta parsiranja ovisi o strukturi PDF-a. Najbolji rezultati su s PDF-ovima koji imaju čist tekst (nije skenirani PDF ili PDF s kompleksnom tablicom).
 
 Redovi koji ne odgovaraju nijednom formatu će biti označeni kao nevalidni i možete ih ručno ispraviti u tabeli.
 
