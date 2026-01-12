@@ -20,6 +20,7 @@ export interface Team {
   match_id: string;
   name: string;
   team_code: string;
+  logo?: string; // SVG content (string) or base64 encoded image
   created_at: string;
 }
 

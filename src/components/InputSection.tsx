@@ -1,14 +1,16 @@
-import { useState, useRef } from "react";
+import { useState, useRef, memo } from "react";
 import { FaPaste, FaKeyboard, FaCheck, FaPlus, FaFilePdf, FaSpinner } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../hooks/useToast";
 import { parsePDFForPlayers } from "../utils/pdfParser";
 
 interface InputSectionProps {
   onParseText: (text: string) => void;
 }
 
-export default function InputSection({ onParseText }: InputSectionProps) {
+const InputSection = memo(function InputSection({ onParseText }: InputSectionProps) {
   const { isAuthenticated } = useAuth();
+  const toast = useToast();
   const [inputText, setInputText] = useState("");
   const [activeTab, setActiveTab] = useState<"paste" | "manual" | "pdf">("paste");
   const [isProcessingPDF, setIsProcessingPDF] = useState(false);
@@ -39,7 +41,7 @@ export default function InputSection({ onParseText }: InputSectionProps) {
     if (!file) return;
 
     if (file.type !== 'application/pdf') {
-      alert('Molimo odaberite PDF datoteku!');
+      toast.showError('Please select a PDF file!');
       return;
     }
 
@@ -50,7 +52,7 @@ export default function InputSection({ onParseText }: InputSectionProps) {
       const extractedText = await parsePDFForPlayers(file);
       
       if (!extractedText.trim()) {
-        alert('Nije moguće izvući tekst iz PDF datoteke. Molimo provjerite da li je PDF ispravan.');
+        toast.showError('Unable to extract text from PDF file. Please check if the PDF is valid.');
         setIsProcessingPDF(false);
         setPdfFileName(null);
         return;
@@ -66,7 +68,7 @@ export default function InputSection({ onParseText }: InputSectionProps) {
       setPdfFileName(null);
     } catch (error) {
       console.error('Error processing PDF:', error);
-      alert(`Greška pri obradi PDF datoteke: ${error instanceof Error ? error.message : 'Nepoznata greška'}`);
+      toast.showError(`Error processing PDF file: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setPdfFileName(null);
     } finally {
       setIsProcessingPDF(false);
@@ -161,6 +163,7 @@ export default function InputSection({ onParseText }: InputSectionProps) {
             <button
               onClick={handleManualAdd}
               className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] font-bold text-lg border border-green-400/30"
+              aria-label="Add player from manual input"
             >
               <FaPlus className="text-lg" />
               Add Player
@@ -183,7 +186,7 @@ export default function InputSection({ onParseText }: InputSectionProps) {
                 <div className="flex flex-col items-center gap-4">
                   <FaSpinner className="text-4xl text-indigo-400 animate-spin" />
                   <div className="text-gray-300">
-                    <p className="font-semibold">Obrađujem PDF...</p>
+                    <p className="font-semibold">Processing PDF...</p>
                     {pdfFileName && (
                       <p className="text-sm text-gray-400 mt-1">{pdfFileName}</p>
                     )}
@@ -193,26 +196,27 @@ export default function InputSection({ onParseText }: InputSectionProps) {
                 <div className="flex flex-col items-center gap-4">
                   <FaFilePdf className="text-5xl text-red-400" />
                   <div className="text-gray-300">
-                    <p className="font-semibold mb-2">Kliknite za odabir PDF datoteke</p>
+                    <p className="font-semibold mb-2">Click to select PDF file</p>
                     <p className="text-sm text-gray-400">
-                      Aplikacija će automatski izvući popis igrača iz PDF-a
+                      The application will automatically extract the list of players from the PDF
                     </p>
                   </div>
                   <button
                     onClick={handlePDFButtonClick}
                     disabled={isProcessingPDF}
                     className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-xl hover:shadow-2xl transform hover:scale-105 font-bold border border-indigo-400/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    aria-label="Select PDF file to import players"
                   >
                     <FaFilePdf className="text-lg" />
-                    Odaberi PDF datoteku
+                    Select PDF File
                   </button>
                 </div>
               )}
             </div>
             <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 text-sm text-blue-200">
-              <p className="font-semibold mb-2">💡 Savjet:</p>
+              <p className="font-semibold mb-2">💡 Tip:</p>
               <p className="text-blue-300/90">
-                PDF bi trebao sadržavati popis igrača u jednom od podržanih formata:
+                PDF should contain a list of players in one of the supported formats:
               </p>
               <ul className="list-disc list-inside mt-2 space-y-1 text-blue-300/80 ml-2">
                 <li>7 Ivan Horvat</li>
@@ -226,4 +230,6 @@ export default function InputSection({ onParseText }: InputSectionProps) {
       </div>
     </div>
   );
-}
+});
+
+export default InputSection;

@@ -1,218 +1,209 @@
 [
   {
-    "id": "1768040068237-0",
-    "player_number": "33",
-    "first_name": "Ivan",
-    "last_name": "NEVISTIC",
-    "raw_input": "33 Ivan Nevistić",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-1",
-    "player_number": "3",
-    "first_name": "Bruno",
-    "last_name": "GODA",
-    "raw_input": "3 Bruno Goda",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-2",
-    "player_number": "8",
-    "first_name": "Miha",
-    "last_name": "ZAJC",
-    "raw_input": "8 Miha Zajc",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-3",
-    "player_number": "11",
-    "first_name": "Arber",
-    "last_name": "HOXHA",
-    "raw_input": "11 Arbër Hoxha",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-4",
-    "player_number": "17",
-    "first_name": "Sandro",
-    "last_name": "KULENOVIC",
-    "raw_input": "17 Sandro Kulenović",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-5",
-    "player_number": "21",
-    "first_name": "Mateo",
-    "last_name": "LISICA",
-    "raw_input": "21 Mateo Lisica",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-6",
-    "player_number": "26",
-    "first_name": "Scott",
-    "last_name": "MCKENNA",
-    "raw_input": "26 Scott McKenna",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-7",
-    "player_number": "27",
-    "first_name": "Josip",
-    "last_name": "MISIC",
-    "raw_input": "27 Josip Mišić",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-8",
-    "player_number": "28",
-    "first_name": "Kevin",
-    "last_name": "THEOPHILE-CATHERINE",
-    "raw_input": "28 Kévin Théophile-Catherine",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-9",
-    "player_number": "36",
-    "first_name": "Sergi",
-    "last_name": "DOMINGUEZ",
-    "raw_input": "36 Sergi Dominguez",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-10",
-    "player_number": "77",
-    "first_name": "Dejan",
-    "last_name": "LJUBICIC",
-    "raw_input": "77 Dejan Ljubičić",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-11",
+    "id": "1768049917057-0",
     "player_number": "44",
+    "team_code": "d",
     "first_name": "Ivan",
     "last_name": "FILIPOVIC",
     "raw_input": "44 Ivan Filipović",
-    "valid": true,
-    "team_code": "d"
+    "valid": true
   },
   {
-    "id": "1768040068237-12",
-    "player_number": "6",
-    "first_name": "Gonzalo",
-    "last_name": "VILLAR",
-    "raw_input": "6 Gonzalo Villar",
-    "valid": true,
-    "team_code": "d"
+    "id": "1768049917057-1",
+    "player_number": "3",
+    "team_code": "d",
+    "first_name": "Bruno",
+    "last_name": "GODA",
+    "raw_input": "3 Bruno Goda",
+    "valid": true
   },
   {
-    "id": "1768040068237-13",
-    "player_number": "7",
-    "first_name": "Luka",
-    "last_name": "STOJKOVIC",
-    "raw_input": "7 Luka Stojković",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-14",
+    "id": "1768049917057-2",
     "player_number": "9",
+    "team_code": "d",
     "first_name": "Dion",
     "last_name": "BELJO",
     "raw_input": "9 Dion Beljo",
-    "valid": true,
-    "team_code": "d"
+    "valid": true
   },
   {
-    "id": "1768040068237-15",
-    "player_number": "10",
-    "first_name": "Gabriel",
-    "last_name": "VIDOVIC",
-    "raw_input": "10 Gabriel Vidović",
-    "valid": true,
-    "team_code": "d"
+    "id": "1768049917057-3",
+    "player_number": "11",
+    "team_code": "d",
+    "first_name": "Arber",
+    "last_name": "HOXHA",
+    "raw_input": "11 Arbër Hoxha",
+    "valid": true
   },
   {
-    "id": "1768040068237-16",
+    "id": "1768049917057-4",
     "player_number": "14",
+    "team_code": "d",
     "first_name": "Marko",
     "last_name": "SOLDO",
     "raw_input": "14 Marko Soldo",
-    "valid": true,
-    "team_code": "d"
+    "valid": true
   },
   {
-    "id": "1768040068237-17",
-    "player_number": "15",
-    "first_name": "Niko",
-    "last_name": "GALESIC",
-    "raw_input": "15 Niko Galešić",
-    "valid": true,
-    "team_code": "d"
+    "id": "1768049917057-5",
+    "player_number": "26",
+    "team_code": "d",
+    "first_name": "Scott",
+    "last_name": "MCKENNA",
+    "raw_input": "26 Scott McKenna",
+    "valid": true
   },
   {
-    "id": "1768040068237-18",
-    "player_number": "20",
-    "first_name": "Robert",
-    "last_name": "MUDRAZIJA",
-    "raw_input": "20 Robert Mudražija",
-    "valid": true,
-    "team_code": "d"
+    "id": "1768049917057-6",
+    "player_number": "27",
+    "team_code": "d",
+    "first_name": "Josip",
+    "last_name": "MISIC",
+    "raw_input": "27 Josip Mišić",
+    "valid": true
   },
   {
-    "id": "1768040068237-19",
-    "player_number": "22",
-    "first_name": "Matteo Perez",
-    "last_name": "VINLOF",
-    "raw_input": "22 Matteo Perez Vinlöf",
-    "valid": true,
-    "team_code": "d"
+    "id": "1768049917057-7",
+    "player_number": "30",
+    "team_code": "d",
+    "first_name": "Fran",
+    "last_name": "TOPIC",
+    "raw_input": "30 Fran Topić",
+    "valid": true
   },
   {
-    "id": "1768040068237-20",
-    "player_number": "23",
-    "first_name": "Cardoso",
-    "last_name": "VARELA",
-    "raw_input": "23 Cardoso Varela",
-    "valid": true,
-    "team_code": "d"
-  },
-  {
-    "id": "1768040068237-21",
+    "id": "1768049917057-8",
     "player_number": "35",
+    "team_code": "d",
     "first_name": "Noa",
     "last_name": "MIKIC",
     "raw_input": "35 Noa Mikić",
-    "valid": true,
-    "team_code": "d"
+    "valid": true
   },
   {
-    "id": "1768040068237-22",
+    "id": "1768049917057-9",
+    "player_number": "36",
+    "team_code": "d",
+    "first_name": "Sergi",
+    "last_name": "DOMINGUEZ",
+    "raw_input": "36 Sergi Dominguez",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-10",
+    "player_number": "77",
+    "team_code": "d",
+    "first_name": "Dejan",
+    "last_name": "LJUBICIC",
+    "raw_input": "77 Dejan Ljubičić",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-11",
+    "player_number": "33",
+    "team_code": "d",
+    "first_name": "Ivan",
+    "last_name": "NEVISTIC",
+    "raw_input": "33 Ivan Nevistić",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-12",
+    "player_number": "88",
+    "team_code": "d",
+    "first_name": "Antonio",
+    "last_name": "RAJIC",
+    "raw_input": "88 Antonio Rajić",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-13",
+    "player_number": "2",
+    "team_code": "d",
+    "first_name": "Moreno",
+    "last_name": "ZIVKOVIC",
+    "raw_input": "2 Moreno Živković",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-14",
+    "player_number": "6",
+    "team_code": "d",
+    "first_name": "Gonzalo",
+    "last_name": "VILLAR",
+    "raw_input": "6 Gonzalo Villar",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-15",
+    "player_number": "8",
+    "team_code": "d",
+    "first_name": "Miha",
+    "last_name": "ZAJC",
+    "raw_input": "8 Miha Zajc",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-16",
+    "player_number": "10",
+    "team_code": "d",
+    "first_name": "Gabriel",
+    "last_name": "VIDOVIC",
+    "raw_input": "10 Gabriel Vidović",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-17",
+    "player_number": "15",
+    "team_code": "d",
+    "first_name": "Niko",
+    "last_name": "GALESIC",
+    "raw_input": "15 Niko Galešić",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-18",
+    "player_number": "17",
+    "team_code": "d",
+    "first_name": "Sandro",
+    "last_name": "KULENOVIC",
+    "raw_input": "17 Sandro Kulenović",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-19",
+    "player_number": "22",
+    "team_code": "d",
+    "first_name": "Matteo",
+    "last_name": "PEREZ VINLOF",
+    "raw_input": "22 Matteo Perez Vinlöf",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-20",
+    "player_number": "23",
+    "team_code": "d",
+    "first_name": "Cardoso",
+    "last_name": "VARELA",
+    "raw_input": "23 Cardoso Varela",
+    "valid": true
+  },
+  {
+    "id": "1768049917057-21",
     "player_number": "71",
+    "team_code": "d",
     "first_name": "Mounsef",
     "last_name": "BAKRAR",
     "raw_input": "71 Mounsef Bakrar",
-    "valid": true,
-    "team_code": "d"
+    "valid": true
   },
   {
-    "id": "1768040068237-23",
+    "id": "1768049917057-22",
     "player_number": "c",
+    "team_code": "d",
     "first_name": "Mario",
     "last_name": "KOVACEVIC",
     "raw_input": "c Mario Kovacevic",
-    "valid": true,
-    "team_code": "d"
+    "valid": true
   }
 ]

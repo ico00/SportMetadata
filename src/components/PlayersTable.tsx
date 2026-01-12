@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Player } from "../types";
 import { useAuth } from "../context/AuthContext";
+import { capitalizeWords } from "../utils/stringUtils";
+import { sortPlayerNumber } from "../utils/sortUtils";
+import { PLAYER_CONSTRAINTS } from "../constants";
 import { 
   FaUser, FaEdit, FaTrash, FaCheck, FaTimes, 
   FaBroom, FaExchangeAlt, FaHashtag, FaTag, 
-  FaEye, FaCheckCircle, FaExclamationCircle
+  FaEye, FaCheckCircle, FaExclamationCircle, FaSearch, FaFilter
 } from "react-icons/fa";
 
 interface PlayersTableProps {
@@ -27,6 +30,8 @@ export default function PlayersTable({
   const { isAuthenticated } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<Partial<Player>>({});
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "valid" | "invalid">("all");
 
   const startEdit = (player: Player) => {
     setEditingId(player.id);
@@ -37,13 +42,6 @@ export default function PlayersTable({
     });
   };
 
-  // Function to capitalize names
-  const capitalizeWords = (str: string): string => {
-    return str
-      .split(/\s+/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  };
 
   const saveEdit = (playerId: string) => {
     const player = players.find((p) => p.id === playerId);
@@ -69,42 +67,41 @@ export default function PlayersTable({
   };
 
   const getPreview = (player: Player) => {
-    return `${teamCode}${player.player_number}\t${player.first_name} ${player.last_name} (${player.player_number})`;
+    const namePart = player.first_name?.trim() 
+      ? `${player.first_name} ${player.last_name}`
+      : player.last_name;
+    return `${teamCode}${player.player_number}\t${namePart} (${player.player_number})`;
   };
 
-  // Sort function that handles both numbers and letters
-  const sortPlayerNumber = (a: string, b: string): number => {
-    const aIsNumber = !isNaN(Number(a));
-    const bIsNumber = !isNaN(Number(b));
-    
-    // Both are numbers - sort numerically
-    if (aIsNumber && bIsNumber) {
-      return Number(a) - Number(b);
-    }
-    
-    // Both are letters - sort alphabetically
-    if (!aIsNumber && !bIsNumber) {
-      return a.localeCompare(b);
-    }
-    
-    // Numbers come before letters
-    if (aIsNumber && !bIsNumber) {
-      return -1;
-    }
-    if (!aIsNumber && bIsNumber) {
-      return 1;
-    }
-    
-    return 0;
-  };
 
-  const sortedPlayers = [...players].sort(
+  // Filter and search logic
+  const filteredPlayers = players.filter((player) => {
+    // Status filter
+    if (filterStatus === "valid" && !player.valid) return false;
+    if (filterStatus === "invalid" && player.valid) return false;
+
+    // Search query filter
+    if (searchQuery.trim() === "") return true;
+
+    const query = searchQuery.toLowerCase().trim();
+    const searchFields = [
+      player.player_number.toLowerCase(),
+      player.first_name.toLowerCase(),
+      player.last_name.toLowerCase(),
+      `${player.first_name} ${player.last_name}`.toLowerCase(),
+    ];
+
+    return searchFields.some(field => field.includes(query));
+  });
+
+  const sortedPlayers = [...filteredPlayers].sort(
     (a, b) => sortPlayerNumber(a.player_number, b.player_number)
   );
 
   const validPlayersCount = players.filter(p => p.valid).length;
   const invalidPlayersCount = players.filter(p => !p.valid).length;
   const validPercentage = players.length > 0 ? (validPlayersCount / players.length) * 100 : 0;
+  const filteredCount = filteredPlayers.length;
 
   return (
     <div className="bg-gradient-to-br from-gray-800 to-gray-800/50 rounded-xl p-6 shadow-2xl border border-gray-700/50 hover:border-cyan-500/50 transition-all duration-300 animate-slide-up backdrop-blur-sm relative overflow-hidden group">
@@ -143,6 +140,7 @@ export default function PlayersTable({
                   onClick={onCleanNames}
                   className="px-3 py-1.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-orange-400/30"
                   title="Remove all diacritics (č, ć, ž, š, đ and others) from names"
+                  aria-label="Remove all diacritics from player names"
                 >
                   <FaBroom className="text-xs" />
                   Clean Characters
@@ -153,6 +151,7 @@ export default function PlayersTable({
                   onClick={onSwapNames}
                   className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-purple-400/30"
                   title="Swap first name and last name for all players"
+                  aria-label="Swap first name and last name for all players"
                 >
                   <FaExchangeAlt className="text-xs" />
                   Swap Name/Last Name
@@ -163,18 +162,72 @@ export default function PlayersTable({
         </div>
 
         {players.length > 0 && (
-          <div className="mb-4 bg-gradient-to-r from-gray-700/50 to-gray-700/30 rounded-lg p-3 border border-gray-600/50">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-gray-400 font-medium">Validation Status</span>
-              <span className="text-xs font-semibold text-cyan-400">{validPercentage.toFixed(0)}%</span>
+          <>
+            {/* Search and Filter Section */}
+            <div className="mb-4 flex flex-col sm:flex-row gap-3">
+              {/* Search Input */}
+              <div className="flex-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaSearch className="text-gray-400 text-sm" />
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name or number..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-700/80 to-gray-700/60 border border-gray-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 text-gray-200 placeholder-gray-400 transition-all duration-200"
+                  aria-label="Search players by name or number"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200 transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <FaTimes className="text-xs" />
+                  </button>
+                )}
+              </div>
+
+              {/* Filter Dropdown */}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <FaFilter className="text-gray-400 text-sm" />
+                </div>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value as "all" | "valid" | "invalid")}
+                  className="pl-10 pr-8 py-2.5 bg-gradient-to-r from-gray-700/80 to-gray-700/60 border border-gray-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 text-gray-200 appearance-none cursor-pointer transition-all duration-200"
+                  aria-label="Filter players by status"
+                >
+                  <option value="all">All Players</option>
+                  <option value="valid">Valid Only</option>
+                  <option value="invalid">Invalid Only</option>
+                </select>
+              </div>
             </div>
-            <div className="h-2 bg-gray-600/50 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full transition-all duration-500"
-                style={{ width: `${validPercentage}%` }}
-              ></div>
+
+            {/* Results Count */}
+            {(searchQuery || filterStatus !== "all") && (
+              <div className="mb-4 text-sm text-gray-400">
+                Showing {filteredCount} of {players.length} player{players.length !== 1 ? 's' : ''}
+              </div>
+            )}
+
+            {/* Validation Status Bar */}
+            <div className="mb-4 bg-gradient-to-r from-gray-700/50 to-gray-700/30 rounded-lg p-3 border border-gray-600/50">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-gray-400 font-medium">Validation Status</span>
+                <span className="text-xs font-semibold text-cyan-400">{validPercentage.toFixed(0)}%</span>
+              </div>
+              <div className="h-2 bg-gray-600/50 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full transition-all duration-500"
+                  style={{ width: `${validPercentage}%` }}
+                ></div>
+              </div>
             </div>
-          </div>
+          </>
         )}
 
       {players.length === 0 ? (
@@ -184,6 +237,14 @@ export default function PlayersTable({
           </div>
           <p className="text-gray-400 text-lg">No players yet</p>
           <p className="text-gray-500 text-sm mt-1">Add players using the input above</p>
+        </div>
+      ) : sortedPlayers.length === 0 ? (
+        <div className="text-center py-12 animate-fade-in">
+          <div className="p-4 bg-gray-700/30 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+            <FaSearch className="text-4xl text-gray-500" />
+          </div>
+          <p className="text-gray-400 text-lg">No players match your search</p>
+          <p className="text-gray-500 text-sm mt-1">Try adjusting your search or filter</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-gray-700/50 shadow-inner bg-gray-900/30 backdrop-blur-sm">
@@ -248,9 +309,17 @@ export default function PlayersTable({
                               });
                             }
                           }}
-                          maxLength={3}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              cancelEdit();
+                            } else if (e.key === 'Enter' && e.ctrlKey) {
+                              saveEdit(player.id);
+                            }
+                          }}
+                          maxLength={PLAYER_CONSTRAINTS.MAX_NUMBER_LENGTH}
                           className="w-20 px-3 py-2 bg-gradient-to-r from-gray-700 to-gray-800 border border-gray-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 text-gray-200 font-semibold text-center transition-all duration-200"
                           placeholder="7, 10, or A"
+                          aria-label="Player number"
                         />
                       </td>
                       <td className="py-3 px-4">
@@ -259,6 +328,7 @@ export default function PlayersTable({
                           value={teamCode}
                           readOnly
                           className="w-20 px-3 py-2 bg-gray-600/50 border border-gray-500/50 rounded-lg text-gray-400 font-semibold uppercase text-center"
+                          aria-label="Team code (read-only)"
                         />
                       </td>
                       <td className="py-3 px-4">
@@ -281,7 +351,13 @@ export default function PlayersTable({
                               first_name: capitalized,
                             });
                           }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              cancelEdit();
+                            }
+                          }}
                           className="w-full px-3 py-2 bg-gradient-to-r from-gray-700 to-gray-800 border border-gray-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 text-gray-200 transition-all duration-200"
+                          aria-label="First name"
                         />
                       </td>
                       <td className="py-3 px-4">
@@ -294,12 +370,23 @@ export default function PlayersTable({
                               last_name: e.target.value.toUpperCase(), // Automatski konvertuj u uppercase
                             })
                           }
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              cancelEdit();
+                            }
+                          }}
                           className="w-full px-3 py-2 bg-gradient-to-r from-gray-700 to-gray-800 border border-gray-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 text-gray-200 font-semibold uppercase transition-all duration-200"
+                          aria-label="Last name"
                         />
                       </td>
                       <td className="py-3 px-4 text-xs text-gray-400 font-mono bg-gray-900/30 rounded-lg px-3 py-2">
                         {editValues.player_number && teamCode
-                          ? `${teamCode}${editValues.player_number}\t${editValues.first_name || ""} ${editValues.last_name || ""} (${editValues.player_number})`
+                          ? (() => {
+                              const namePart = editValues.first_name?.trim()
+                                ? `${editValues.first_name} ${editValues.last_name || ""}`
+                                : (editValues.last_name || "");
+                              return `${teamCode}${editValues.player_number}\t${namePart} (${editValues.player_number})`;
+                            })()
                           : "-"}
                       </td>
                       <td className="py-3 px-4">
@@ -313,6 +400,7 @@ export default function PlayersTable({
                           <button
                             onClick={() => saveEdit(player.id)}
                             className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-1 shadow-lg hover:shadow-xl transform hover:scale-105 border border-green-400/30 font-semibold"
+                            aria-label={`Save changes for player ${player.first_name} ${player.last_name}`}
                           >
                             <FaCheck className="text-xs" />
                             Save
@@ -320,6 +408,7 @@ export default function PlayersTable({
                           <button
                             onClick={cancelEdit}
                             className="px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-1 shadow-lg hover:shadow-xl transform hover:scale-105 border border-gray-400/30 font-semibold"
+                            aria-label="Cancel editing player"
                           >
                             <FaTimes className="text-xs" />
                             Cancel
@@ -363,6 +452,7 @@ export default function PlayersTable({
                             <button
                               onClick={() => startEdit(player)}
                               className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-1 shadow-lg hover:shadow-xl transform hover:scale-105 border border-blue-400/30"
+                              aria-label={`Edit player ${player.first_name} ${player.last_name}`}
                             >
                               <FaEdit className="text-xs" />
                               Edit
@@ -370,6 +460,7 @@ export default function PlayersTable({
                             <button
                               onClick={() => onDeletePlayer(player.id)}
                               className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-1 shadow-lg hover:shadow-xl transform hover:scale-105 border border-red-400/30"
+                              aria-label={`Delete player ${player.first_name} ${player.last_name}`}
                             >
                               <FaTrash className="text-xs" />
                               Delete

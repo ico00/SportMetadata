@@ -1,4 +1,6 @@
 import { ParsedPlayer } from "../types";
+import { capitalizeWords } from "./stringUtils";
+import { PLAYER_CONSTRAINTS } from "../constants";
 
 /**
  * Parsira red teksta u player objekt
@@ -8,15 +10,6 @@ import { ParsedPlayer } from "../types";
  * - "7h Ivan Horvat"
  * - "Ivan Horvat - 7"
  */
-/**
- * Capitalizira svaku riječ u stringu (prvo slovo veliko, ostala mala)
- */
-function capitalizeWords(str: string): string {
-  return str
-    .split(/\s+/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-}
 
 export function parsePlayerLine(line: string): ParsedPlayer | null {
   const trimmed = line.trim();
@@ -27,7 +20,7 @@ export function parsePlayerLine(line: string): ParsedPlayer | null {
   if (format1Number) {
     const number = format1Number[1];
     const nameParts = format1Number[2].trim().split(/\s+/);
-    if (nameParts.length >= 2) {
+    if (nameParts.length >= PLAYER_CONSTRAINTS.MIN_NAME_PARTS) {
       const lastName = nameParts.pop()!.toUpperCase();
       const firstName = capitalizeWords(nameParts.join(" "));
       return {
@@ -45,7 +38,7 @@ export function parsePlayerLine(line: string): ParsedPlayer | null {
   if (format1Letter) {
     const letter = format1Letter[1]; // Keep original case
     const nameParts = format1Letter[2].trim().split(/\s+/);
-    if (nameParts.length >= 2) {
+    if (nameParts.length >= PLAYER_CONSTRAINTS.MIN_NAME_PARTS) {
       const lastName = nameParts.pop()!.toUpperCase();
       const firstName = capitalizeWords(nameParts.join(" "));
       return {
@@ -63,7 +56,7 @@ export function parsePlayerLine(line: string): ParsedPlayer | null {
   if (format2) {
     const nameParts = format2[1].trim().split(/\s+/);
     const numberOrLetter = format2[2]; // Keep original case
-    if (nameParts.length >= 2) {
+    if (nameParts.length >= PLAYER_CONSTRAINTS.MIN_NAME_PARTS) {
       const lastName = nameParts.pop()!.toUpperCase();
       const firstName = capitalizeWords(nameParts.join(" "));
       return {
@@ -81,7 +74,7 @@ export function parsePlayerLine(line: string): ParsedPlayer | null {
   if (format3) {
     const nameParts = format3[1].trim().split(/\s+/);
     const numberOrLetter = format3[2]; // Keep original case
-    if (nameParts.length >= 2) {
+    if (nameParts.length >= PLAYER_CONSTRAINTS.MIN_NAME_PARTS) {
       const lastName = nameParts.pop()!.toUpperCase();
       const firstName = capitalizeWords(nameParts.join(" "));
       return {

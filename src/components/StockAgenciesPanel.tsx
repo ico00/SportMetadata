@@ -3,6 +3,7 @@ import { formatForShutterstock, formatForShutterstockEditorial, formatForImago }
 import { FaCopy, FaImage, FaCheck, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { TIMEOUT } from "../constants";
 
 interface StockAgenciesPanelProps {
   match: Match | null;
@@ -49,7 +50,7 @@ export default function StockAgenciesPanel({ match, teams = [] }: StockAgenciesP
   const copyToClipboard = (text: string, agencyKey: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(agencyKey);
-      setTimeout(() => setCopied(null), 2000);
+      setTimeout(() => setCopied(null), TIMEOUT.COPY_FEEDBACK);
     }).catch((err) => {
       alert(`Failed to copy: ${err}`);
     });

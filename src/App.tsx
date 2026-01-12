@@ -1,408 +1,89 @@
-import { useState, useEffect, useRef } from "react";
-import { Sport, Match, Team, Player } from "./types";
-import { parsePlayerText } from "./utils/parser";
-import { 
-  loadSports, saveSports, deleteSport,
-  loadMatches, saveMatches, deleteMatch,
-  loadTeams, saveTeams, deleteTeam,
-  loadPlayers, savePlayers 
-} from "./utils/storage";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { loadPlayers } from "./utils/storage";
 import { exportToTxt } from "./utils/export";
 import InputSection from "./components/InputSection";
 import PlayersTable from "./components/PlayersTable";
 import ExportPanel from "./components/ExportPanel";
 import StockAgenciesPanel from "./components/StockAgenciesPanel";
 import DatePicker from "./components/DatePicker";
+import CustomSelect from "./components/CustomSelect";
 import AdminLogin from "./components/AdminLogin";
 import { useAuth } from "./context/AuthContext";
-import { 
-  FaFutbol, FaPlus, FaTrash, 
+import { useToast } from "./hooks/useToast";
+import { useSports } from "./hooks/useSports";
+import { useMatches } from "./hooks/useMatches";
+import { useTeams } from "./hooks/useTeams";
+import { usePlayers } from "./hooks/usePlayers";
+import {
+  FaFutbol, FaPlus, FaTrash,
   FaCalendarAlt, FaMapMarkerAlt, FaFlag, FaFileAlt,
-  FaUsers, FaTag, FaBuilding, FaSignOutAlt, FaLock
+  FaUsers, FaTag, FaBuilding, FaSignOutAlt, FaLock, FaUser, FaImage, FaTimes
 } from "react-icons/fa";
 
 function App() {
   const { isAuthenticated, logout, isLocalhost } = useAuth();
-  const [sports, setSports] = useState<Sport[]>([]);
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
-  
-  const [currentSport, setCurrentSport] = useState<Sport | null>(null);
-  const [currentMatch, setCurrentMatch] = useState<Match | null>(null);
-  const [currentTeam, setCurrentTeam] = useState<Team | null>(null);
-  
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [teamCode, setTeamCode] = useState("");
+  const toast = useToast();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLogoModal, setShowLogoModal] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
-  // Load initial data
+  // Use custom hooks for state management
+  const {
+    sports,
+    currentSport,
+    setCurrentSport,
+    handleCreateSport,
+    handleUpdateSport,
+    handleDeleteSport,
+  } = useSports();
+
+  const {
+    matches,
+    currentMatch,
+    setCurrentMatch,
+    currentSportMatches,
+    handleCreateMatch,
+    handleUpdateMatch,
+    handleDeleteMatch,
+  } = useMatches({ currentSport });
+
+  const {
+    teams,
+    currentTeam,
+    setCurrentTeam,
+    teamCode,
+    setTeamCode,
+    currentMatchTeams,
+    handleCreateTeam,
+    handleUpdateTeam,
+    handleDeleteTeam,
+  } = useTeams({ currentMatch });
+
+  // Ref for currentTeam to use in async callbacks
+  const currentTeamRef = useRef(currentTeam);
+  
+  // Update ref when currentTeam changes
   useEffect(() => {
-    console.log('🔄 Loading initial data...');
-    loadSports()
-      .then((data) => {
-        console.log('✅ Loaded sports:', data);
-        setSports(data);
-      })
-      .catch((error) => {
-        console.error('❌ Error loading sports:', error);
-      });
-    
-    loadMatches()
-      .then((data) => {
-        console.log('✅ Loaded matches:', data);
-        setMatches(data);
-      })
-      .catch((error) => {
-        console.error('❌ Error loading matches:', error);
-      });
-    
-    loadTeams()
-      .then((data) => {
-        console.log('✅ Loaded teams:', data);
-        setTeams(data);
-      })
-      .catch((error) => {
-        console.error('❌ Error loading teams:', error);
-      });
-  }, []);
-
-  // Filter matches by sport
-  useEffect(() => {
-    if (currentSport) {
-      const sportMatches = matches.filter(m => m.sport_id === currentSport.id);
-      if (sportMatches.length > 0 && !currentMatch) {
-        setCurrentMatch(sportMatches[0]);
-      } else if (sportMatches.length === 0) {
-        setCurrentMatch(null);
-      }
-    } else {
-      setCurrentMatch(null);
-    }
-  }, [currentSport, matches]);
-
-  // Filter teams by match
-  useEffect(() => {
-    if (currentMatch) {
-      const matchTeams = teams.filter(t => t.match_id === currentMatch.id);
-      if (matchTeams.length > 0 && !currentTeam) {
-        setCurrentTeam(matchTeams[0]);
-      } else if (matchTeams.length === 0) {
-        setCurrentTeam(null);
-      }
-    } else {
-      setCurrentTeam(null);
-    }
-  }, [currentMatch, teams]);
-
-  // Store previous team to save before switching
-  const prevTeamRef = useRef<Team | null>(null);
-  const prevPlayersRef = useRef<Player[]>([]);
-
-  // Load players when team changes
-  useEffect(() => {
-    // Save previous team's players before switching
-    if (prevTeamRef.current && prevPlayersRef.current.length > 0) {
-      savePlayers(prevTeamRef.current.id, prevPlayersRef.current);
-    }
-
-    if (currentTeam) {
-      loadPlayers(currentTeam.id).then((loadedPlayers) => {
-        setPlayers(loadedPlayers);
-        prevPlayersRef.current = loadedPlayers;
-      });
-      setTeamCode(currentTeam.team_code);
-      prevTeamRef.current = currentTeam;
-    } else {
-      setPlayers([]);
-      setTeamCode("");
-      prevPlayersRef.current = [];
-      prevTeamRef.current = null;
-    }
+    currentTeamRef.current = currentTeam;
   }, [currentTeam]);
 
-  // Update ref when players change
-  useEffect(() => {
-    if (currentTeam) {
-      prevPlayersRef.current = players;
-    }
-  }, [players, currentTeam]);
+  const {
+    players,
+    handleParseText,
+    handleUpdatePlayer,
+    handleDeletePlayer,
+    handleSwapNames,
+    handleCleanNames,
+  } = usePlayers({ currentTeam, teamCode });
 
-  // Autosave players (backup, but immediate saves are handled in handlers)
-  useEffect(() => {
-    if (currentTeam && players.length > 0) {
-      const timeoutId = setTimeout(() => {
-        savePlayers(currentTeam.id, players);
-        prevPlayersRef.current = players;
-      }, 2000);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [players, currentTeam]);
-
-  // Sport handlers
-  const handleCreateSport = () => {
-    const newSport: Sport = {
-      id: Date.now().toString(),
-      name: "New Sport",
-      created_at: new Date().toISOString(),
-    };
-    const updatedSports = [...sports, newSport];
-    setSports(updatedSports);
-    saveSports(updatedSports);
-    setCurrentSport(newSport);
-  };
-
-  const handleUpdateSport = (updatedSport: Sport) => {
-    const updatedSports = sports.map((s) =>
-      s.id === updatedSport.id ? updatedSport : s
-    );
-    setSports(updatedSports);
-    saveSports(updatedSports);
-    setCurrentSport(updatedSport);
-  };
-
-  const handleDeleteSport = async (sportId: string) => {
-    const sport = sports.find((s) => s.id === sportId);
-    if (!sport) return;
-
-    if (!window.confirm(`Are you sure you want to delete sport "${sport.name}"?\n\nThis action will delete the sport, all matches and all teams.`)) {
-      return;
-    }
-
-    try {
-      await deleteSport(sportId);
-      const updatedSports = sports.filter((s) => s.id !== sportId);
-      setSports(updatedSports);
-      saveSports(updatedSports);
-
-      if (currentSport?.id === sportId) {
-        setCurrentSport(null);
-      }
-      alert("Sport deleted successfully!");
-    } catch (error) {
-      alert(`Error deleting sport: ${error}`);
-    }
-  };
-
-  // Match handlers
-  const handleCreateMatch = () => {
-    if (!currentSport) {
-      alert("Please select a sport first!");
-      return;
-    }
-    const newMatch: Match = {
-      id: Date.now().toString(),
-      sport_id: currentSport.id,
-      date: new Date().toISOString().split('T')[0],
-      city: "",
-      country: "",
-      venue: "",
-      description: "",
-      created_at: new Date().toISOString(),
-    };
-    const updatedMatches = [...matches, newMatch];
-    setMatches(updatedMatches);
-    saveMatches(updatedMatches);
-    setCurrentMatch(newMatch);
-  };
-
-  const handleUpdateMatch = (updatedMatch: Match) => {
-    const updatedMatches = matches.map((m) =>
-      m.id === updatedMatch.id ? updatedMatch : m
-    );
-    setMatches(updatedMatches);
-    saveMatches(updatedMatches);
-    setCurrentMatch(updatedMatch);
-  };
-
-  const handleDeleteMatch = async (matchId: string) => {
-    const match = matches.find((m) => m.id === matchId);
-    if (!match) return;
-
-    if (!window.confirm(`Are you sure you want to delete this match?\n\nThis action will delete the match and all associated teams.`)) {
-      return;
-    }
-
-    try {
-      await deleteMatch(matchId);
-      const updatedMatches = matches.filter((m) => m.id !== matchId);
-      setMatches(updatedMatches);
-      saveMatches(updatedMatches);
-
-      if (currentMatch?.id === matchId) {
-        setCurrentMatch(null);
-      }
-      alert("Match deleted successfully!");
-    } catch (error) {
-      alert(`Error deleting match: ${error}`);
-    }
-  };
-
-  // Team handlers
-  const handleCreateTeam = () => {
+  const handleExport = useCallback(async () => {
     if (!currentMatch) {
-      alert("Please select a match first!");
-      return;
-    }
-    const newTeam: Team = {
-      id: Date.now().toString(),
-      match_id: currentMatch.id,
-      name: "New Team",
-      team_code: "",
-      created_at: new Date().toISOString(),
-    };
-    const updatedTeams = [...teams, newTeam];
-    setTeams(updatedTeams);
-    saveTeams(updatedTeams);
-    setCurrentTeam(newTeam);
-  };
-
-  const handleUpdateTeam = (updatedTeam: Team) => {
-    const updatedTeams = teams.map((t) =>
-      t.id === updatedTeam.id ? updatedTeam : t
-    );
-    setTeams(updatedTeams);
-    saveTeams(updatedTeams);
-    setCurrentTeam(updatedTeam);
-    setTeamCode(updatedTeam.team_code);
-  };
-
-  const handleDeleteTeam = async (teamId: string) => {
-    const team = teams.find((t) => t.id === teamId);
-    if (!team) return;
-
-    if (!window.confirm(`Are you sure you want to delete team "${team.name}"?\n\nThis action will delete the team and all associated players.`)) {
-      return;
-    }
-
-    try {
-      await deleteTeam(teamId);
-      const updatedTeams = teams.filter((t) => t.id !== teamId);
-      setTeams(updatedTeams);
-      saveTeams(updatedTeams);
-
-      if (currentTeam?.id === teamId) {
-        setCurrentTeam(null);
-        setPlayers([]);
-        setTeamCode("");
-      }
-      alert("Team deleted successfully!");
-    } catch (error) {
-      alert(`Error deleting team: ${error}`);
-    }
-  };
-
-  // Player handlers
-  // Function to capitalize names (each word starts with uppercase)
-  const capitalizeWords = (str: string): string => {
-    return str
-      .split(/\s+/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  };
-
-  const handleParseText = async (text: string) => {
-    if (!currentTeam) {
-      alert("Please select a team first!");
-      return;
-    }
-    
-    const parsed = parsePlayerText(text);
-    const newPlayers: Player[] = parsed.map((p, index) => ({
-      id: `${Date.now()}-${index}`,
-      ...p,
-      first_name: capitalizeWords(p.first_name), // Capitalize first name
-      last_name: p.last_name.toUpperCase(), // Ensure last name is uppercase
-      team_code: teamCode,
-    }));
-    const updatedPlayers = [...players, ...newPlayers];
-    setPlayers(updatedPlayers);
-    
-    // Save immediately after adding players
-    await savePlayers(currentTeam.id, updatedPlayers);
-  };
-
-  const handleUpdatePlayer = async (updatedPlayer: Player) => {
-    if (!currentTeam) return;
-    
-    // Ensure first name is capitalized and last name is uppercase
-    const normalizedPlayer = {
-      ...updatedPlayer,
-      first_name: capitalizeWords(updatedPlayer.first_name),
-      last_name: updatedPlayer.last_name.toUpperCase(),
-    };
-    const updatedPlayers = players.map((p) => (p.id === normalizedPlayer.id ? normalizedPlayer : p));
-    setPlayers(updatedPlayers);
-    
-    // Save immediately after update
-    await savePlayers(currentTeam.id, updatedPlayers);
-  };
-
-  const handleDeletePlayer = async (playerId: string) => {
-    if (!currentTeam) return;
-    
-    const updatedPlayers = players.filter((p) => p.id !== playerId);
-    setPlayers(updatedPlayers);
-    
-    // Save immediately after delete
-    await savePlayers(currentTeam.id, updatedPlayers);
-  };
-
-  const handleSwapNames = async () => {
-    if (!currentTeam) return;
-    
-    const swappedPlayers = players.map((player) => ({
-      ...player,
-      first_name: capitalizeWords(player.last_name.toLowerCase()),
-      last_name: player.first_name.toUpperCase(),
-    }));
-    setPlayers(swappedPlayers);
-    
-    // Save immediately after swap
-    await savePlayers(currentTeam.id, swappedPlayers);
-  };
-
-  // Funkcija za uklanjanje dijakritika
-  const removeDiacritics = (str: string): string => {
-    return str
-      .replace(/dž/g, "dz") // Prvo dž jer je duplo slovo
-      .replace(/Dž/g, "Dz")
-      .replace(/DŽ/g, "DZ")
-      .replace(/đ/g, "dj") // đ → dj
-      .replace(/Đ/g, "Dj")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Ukloni ostale dijakritike
-      .replace(/ć/g, "c")
-      .replace(/Ć/g, "C")
-      .replace(/č/g, "c")
-      .replace(/Č/g, "C")
-      .replace(/š/g, "s")
-      .replace(/Š/g, "S")
-      .replace(/ž/g, "z")
-      .replace(/Ž/g, "Z");
-  };
-
-  const handleCleanNames = async () => {
-    if (!currentTeam) return;
-    
-    const cleanedPlayers = players.map((player) => ({
-      ...player,
-      first_name: capitalizeWords(removeDiacritics(player.first_name)),
-      last_name: removeDiacritics(player.last_name).toUpperCase(),
-    }));
-    setPlayers(cleanedPlayers);
-    
-    // Save immediately after clean
-    await savePlayers(currentTeam.id, cleanedPlayers);
-  };
-
-  const handleExport = async () => {
-    if (!currentMatch) {
-      alert("Please select a match before exporting!");
+      toast.showError("Please select a match before exporting!");
       return;
     }
 
     if (!currentSport) {
-      alert("Please select a sport before exporting!");
+      toast.showError("Please select a sport before exporting!");
       return;
     }
 
@@ -419,7 +100,7 @@ function App() {
       ({ team }) => !team.team_code
     );
     if (teamsWithoutCode.length > 0) {
-      alert(
+      toast.showError(
         `Please enter team code for all teams!\n\nTeams without code: ${teamsWithoutCode.map((t) => t.team.name).join(", ")}`
       );
       return;
@@ -431,33 +112,29 @@ function App() {
       0
     );
     if (totalValidPlayers === 0) {
-      alert("No valid players for export!");
+      toast.showError("No valid players for export!");
       return;
     }
 
     try {
       await exportToTxt(currentSport, currentMatch, teamsWithPlayers);
-      alert(`File exported successfully! (${totalValidPlayers} players from ${teamsWithPlayers.length} teams)`);
+      toast.showSuccess(`File exported successfully! (${totalValidPlayers} players from ${teamsWithPlayers.length} teams)`);
     } catch (error) {
-      alert(`Export error: ${error}`);
+      toast.showError(`Export error: ${error instanceof Error ? error.message : String(error)}`);
     }
-  };
+  }, [currentMatch, currentSport, currentMatchTeams, toast]);
 
-  const currentSportMatches = currentSport 
-    ? matches.filter(m => m.sport_id === currentSport.id)
-    : [];
-  
-  const currentMatchTeams = currentMatch
-    ? teams.filter(t => t.match_id === currentMatch.id)
-    : [];
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      <header className="bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-600 px-6 py-4 shadow-lg">
-        <div className="flex items-center justify-between animate-fade-in">
-          <div className="flex items-center gap-3">
-            <FaFutbol className="text-3xl text-blue-400 animate-bounce-subtle" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+      <header className="bg-gradient-to-r from-gray-800 via-gray-750 to-gray-700 border-b border-gray-600/50 px-6 py-5 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-cyan-500/5"></div>
+        <div className="relative z-10 flex items-center justify-between animate-fade-in">
+          <div className="flex items-center gap-4">
+            <div className="p-2 bg-blue-500/20 rounded-xl border border-blue-400/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+              <FaFutbol className="text-3xl text-blue-400 animate-bounce-subtle" />
+            </div>
+            <h1 className="text-3xl font-extrabold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent animate-pulse-slow">
               Sport Metadata Generator
             </h1>
           </div>
@@ -465,7 +142,7 @@ function App() {
             {!isAuthenticated && !isLocalhost && (
               <button
                 onClick={() => setShowLoginModal(true)}
-                className="px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                className="px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-gray-400/30 font-semibold"
                 title="Admin Login"
               >
                 <FaLock className="text-sm" />
@@ -475,16 +152,18 @@ function App() {
             {isAuthenticated && (
               <button
                 onClick={logout}
-                className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-red-400/30 font-semibold"
               >
                 <FaSignOutAlt className="text-sm" />
                 <span className="hidden sm:inline">Logout</span>
               </button>
             )}
             {isLocalhost && (
-              <div className="px-3 py-1.5 bg-green-500/20 border border-green-500/50 rounded-lg flex items-center gap-2">
-                <FaLock className="text-sm text-green-400" />
-                <span className="text-sm text-green-400 font-medium hidden sm:inline">Admin Mode</span>
+              <div className="px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/50 rounded-xl flex items-center gap-2 shadow-lg backdrop-blur-sm">
+                <div className="p-1 bg-green-500/20 rounded-lg">
+                  <FaLock className="text-sm text-green-400" />
+                </div>
+                <span className="text-sm text-green-400 font-bold hidden sm:inline">Admin Mode</span>
               </div>
             )}
           </div>
@@ -495,35 +174,227 @@ function App() {
         {/* Admin Login Modal */}
         <AdminLogin isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
         
-        {/* Sport Selection */}
-        <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-blue-500/50 transition-all duration-300 animate-slide-up">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <FaFutbol className="text-xl text-blue-400" />
-              <h2 className="text-xl font-semibold">Sport</h2>
-            </div>
-            {isAuthenticated && (
+        {/* Team Logo Modal */}
+        {showLogoModal && currentTeam && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in" 
+            onClick={() => setShowLogoModal(false)}
+          >
+            <div 
+              className="relative bg-gray-800 rounded-lg border border-gray-700 p-6 max-w-md w-full mx-4 shadow-2xl animate-slide-up"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
-                onClick={handleCreateSport}
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                onClick={() => setShowLogoModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
+                aria-label="Close logo modal"
               >
-                <FaPlus className="text-sm" />
-                New Sport
+                <FaTimes className="h-5 w-5" />
               </button>
-            )}
+              
+              <div className="mb-4 flex items-center gap-2">
+                <FaImage className="h-5 w-5 text-yellow-400" />
+                <h3 className="text-lg font-semibold text-gray-100">Team Logo</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Logo Preview */}
+                {currentTeam.logo && (
+                  <div className="flex flex-col items-center">
+                    <div className="w-48 h-48 flex items-center justify-center bg-gray-700/50 border border-gray-600 rounded-lg overflow-hidden">
+                      <img
+                        src={currentTeam.logo.startsWith('data:') ? currentTeam.logo : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(currentTeam.logo)}`}
+                        alt={`${currentTeam.name} logo`}
+                        className="w-full h-full object-contain p-4"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>';
+                          }
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">Current logo</p>
+                  </div>
+                )}
+                
+                {/* Upload Controls */}
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/svg+xml,.svg"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    if (!file.type.includes('svg') && !file.name.endsWith('.svg')) {
+                      toast.showError('Please select an SVG file!');
+                      return;
+                    }
+
+                    try {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const svgContent = event.target?.result as string;
+                        if (svgContent && currentTeamRef.current) {
+                          const updatedTeam = { ...currentTeamRef.current, logo: svgContent };
+                          console.log('🔍 Uploading logo, team ID:', updatedTeam.id, 'logo length:', svgContent.length);
+                          handleUpdateTeam(updatedTeam);
+                          toast.showSuccess('Logo uploaded successfully!');
+                          setShowLogoModal(false);
+                        }
+                      };
+                      reader.onerror = () => {
+                        toast.showError('Error reading SVG file');
+                      };
+                      reader.readAsText(file);
+                    } catch (error) {
+                      toast.showError(`Error uploading logo: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                    } finally {
+                      if (logoInputRef.current) {
+                        logoInputRef.current.value = '';
+                      }
+                    }
+                  }}
+                  className="hidden"
+                  aria-label="Upload team logo SVG file"
+                />
+                
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => logoInputRef.current?.click()}
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg transition-all duration-200 text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-blue-400/30"
+                    aria-label="Upload team logo"
+                  >
+                    <FaImage className="text-xs" />
+                    {currentTeam.logo ? 'Change Logo' : 'Upload Logo'}
+                  </button>
+                  {currentTeam.logo && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (currentTeamRef.current) {
+                          handleUpdateTeam({ ...currentTeamRef.current, logo: undefined });
+                          toast.showSuccess('Logo removed');
+                          setShowLogoModal(false);
+                        }
+                      }}
+                      className="px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-gray-400/30"
+                      aria-label="Remove team logo"
+                    >
+                      <FaTrash className="text-xs" />
+                      Remove
+                    </button>
+                  )}
+                </div>
+                
+                <p className="text-xs text-gray-400 text-center">Upload an SVG file for the team logo/emblem</p>
+              </div>
+            </div>
           </div>
+        )}
+        
+        {/* Statistics Overview */}
+        {sports.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 rounded-xl p-4 border border-blue-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 animate-slide-up backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <FaFutbol className="text-2xl text-blue-400" />
+                </div>
+                <span className="text-3xl font-bold text-blue-400">{sports.length}</span>
+              </div>
+              <p className="text-sm text-gray-300 font-medium">Total Sports</p>
+              <div className="mt-2 h-1 bg-blue-500/20 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-600/20 to-green-800/20 rounded-xl p-4 border border-green-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 animate-slide-up backdrop-blur-sm" style={{ animationDelay: '0.1s' }}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-green-500/20 rounded-lg">
+                  <FaCalendarAlt className="text-2xl text-green-400" />
+                </div>
+                <span className="text-3xl font-bold text-green-400">{matches.length}</span>
+              </div>
+              <p className="text-sm text-gray-300 font-medium">Total Matches</p>
+              <div className="mt-2 h-1 bg-green-500/20 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full" style={{ width: `${Math.min((matches.length / Math.max(sports.length, 1)) * 100, 100)}%` }}></div>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-yellow-600/20 to-yellow-800/20 rounded-xl p-4 border border-yellow-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 animate-slide-up backdrop-blur-sm" style={{ animationDelay: '0.2s' }}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-yellow-500/20 rounded-lg">
+                  <FaUsers className="text-2xl text-yellow-400" />
+                </div>
+                <span className="text-3xl font-bold text-yellow-400">{teams.length}</span>
+              </div>
+              <p className="text-sm text-gray-300 font-medium">Total Teams</p>
+              <div className="mt-2 h-1 bg-yellow-500/20 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full" style={{ width: `${Math.min((teams.length / Math.max(matches.length, 1)) * 100, 100)}%` }}></div>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-cyan-600/20 to-cyan-800/20 rounded-xl p-4 border border-cyan-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 animate-slide-up backdrop-blur-sm" style={{ animationDelay: '0.3s' }}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-cyan-500/20 rounded-lg">
+                  <FaUser className="text-2xl text-cyan-400" />
+                </div>
+                <span className="text-3xl font-bold text-cyan-400">{players.length}</span>
+              </div>
+              <p className="text-sm text-gray-300 font-medium">Total Players</p>
+              <div className="mt-2 h-1 bg-cyan-500/20 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full" style={{ width: `${Math.min((players.filter(p => p.valid).length / Math.max(players.length, 1)) * 100, 100)}%` }}></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Sport Selection */}
+        <div className="bg-gradient-to-br from-gray-800 to-gray-800/50 rounded-xl p-6 shadow-2xl border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 animate-slide-up backdrop-blur-sm relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-transparent transition-all duration-300"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-500/20 rounded-lg group-hover:bg-blue-500/30 transition-colors">
+                  <FaFutbol className="text-2xl text-blue-400" />
+                </div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Sport</h2>
+              </div>
+              {isAuthenticated && (
+                <button
+                  onClick={handleCreateSport}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-blue-400/30"
+                  aria-label="Create new sport"
+                >
+                  <FaPlus className="text-sm" />
+                  New Sport
+                </button>
+              )}
+            </div>
 
           {currentSport && (
             <div className="space-y-3 mb-4 animate-fade-in">
-              <div className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
-                <h3 className="text-lg font-semibold text-blue-400 flex items-center gap-2">
-                  <FaFutbol className="text-blue-400" />
-                  {currentSport.name}
-                </h3>
+              <div className="flex items-center justify-between bg-gradient-to-r from-blue-900/30 to-blue-800/20 rounded-xl p-4 border border-blue-500/30 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <FaFutbol className="text-xl text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-blue-400">{currentSport.name}</h3>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {currentSportMatches.length} {currentSportMatches.length === 1 ? 'match' : 'matches'}
+                    </p>
+                  </div>
+                </div>
                 {isAuthenticated && (
                   <button
                     onClick={() => handleDeleteSport(currentSport.id)}
-                    className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                    className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-red-400/30"
+                    aria-label={`Delete sport ${currentSport.name}`}
                   >
                     <FaTrash className="text-xs" />
                     Delete
@@ -555,56 +426,70 @@ function App() {
 
           {sports.length > 0 && (
             <div>
-              <label className="block text-sm font-medium mb-2">Select Sport</label>
-              <select
+              <label className="block text-sm font-medium mb-2 text-gray-300">Select Sport</label>
+              <CustomSelect
                 value={currentSport?.id || ""}
-                onChange={(e) => {
-                  const sport = sports.find((s) => s.id === e.target.value);
+                onChange={(value) => {
+                  const sport = sports.find((s) => s.id === value);
                   setCurrentSport(sport || null);
                 }}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">-- Select Sport --</option>
-                {sports.map((sport) => (
-                  <option key={sport.id} value={sport.id}>
-                    {sport.name}
-                  </option>
-                ))}
-              </select>
+                options={sports.map((sport) => ({
+                  value: sport.id,
+                  label: sport.name,
+                }))}
+                placeholder="-- Select Sport --"
+                focusColor="blue"
+              />
             </div>
           )}
-        </div>
+            </div>
+          </div>
 
         {/* Match Selection */}
         {currentSport && (
-          <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-green-500/50 transition-all duration-300 animate-slide-up">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <FaCalendarAlt className="text-xl text-green-400" />
-                <h2 className="text-xl font-semibold">Match</h2>
+          <div className="bg-gradient-to-br from-gray-800 to-gray-800/50 rounded-xl p-6 shadow-2xl border border-gray-700/50 hover:border-green-500/50 transition-all duration-300 animate-slide-up backdrop-blur-sm relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 to-green-500/0 group-hover:from-green-500/5 group-hover:to-transparent transition-all duration-300"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-colors">
+                    <FaCalendarAlt className="text-2xl text-green-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Match</h2>
+                </div>
+                {isAuthenticated && (
+                  <button
+                    onClick={handleCreateMatch}
+                    className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-green-400/30"
+                    aria-label="Create new match"
+                  >
+                    <FaPlus className="text-sm" />
+                    New Match
+                  </button>
+                )}
               </div>
-              {isAuthenticated && (
-                <button
-                  onClick={handleCreateMatch}
-                  className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  <FaPlus className="text-sm" />
-                  New Match
-                </button>
-              )}
-            </div>
 
             {currentMatch && (
-              <div className="space-y-3 mb-4 animate-fade-in">
-                <div className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
-                  <h3 className="text-lg font-semibold text-green-400 flex items-center gap-2">
-                    <FaFileAlt className="text-green-400" />
-                    {currentMatch.description || "New match"}
-                  </h3>
+              <div className="space-y-4 mb-4 animate-fade-in">
+                <div className="flex items-center justify-between bg-gradient-to-r from-green-900/30 to-green-800/20 rounded-xl p-4 border border-green-500/30 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-500/20 rounded-lg">
+                      <FaFileAlt className="text-xl text-green-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-green-400">{currentMatch.description || "New match"}</h3>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                        {currentMatch.date && <span className="flex items-center gap-1"><FaCalendarAlt className="text-green-400" /> {currentMatch.date}</span>}
+                        {currentMatch.city && <span className="flex items-center gap-1"><FaMapMarkerAlt className="text-green-400" /> {currentMatch.city}</span>}
+                        {currentMatchTeams.length > 0 && <span className="flex items-center gap-1"><FaUsers className="text-green-400" /> {currentMatchTeams.length} teams</span>}
+                      </div>
+                    </div>
+                  </div>
                   {isAuthenticated && (
                     <button
                       onClick={() => handleDeleteMatch(currentMatch.id)}
-                      className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                      className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-red-400/30"
+                      aria-label={`Delete match ${currentMatch.description || currentMatch.date}`}
                     >
                       <FaTrash className="text-xs" />
                       Delete
@@ -744,57 +629,120 @@ function App() {
 
             {currentSportMatches.length > 0 && (
               <div>
-                <label className="block text-sm font-medium mb-2">Select Match</label>
-                <select
+                <label className="block text-sm font-medium mb-2 text-gray-300">Select Match</label>
+                <CustomSelect
                   value={currentMatch?.id || ""}
-                  onChange={(e) => {
-                    const match = currentSportMatches.find((m) => m.id === e.target.value);
+                  onChange={(value) => {
+                    const match = currentSportMatches.find((m) => m.id === value);
                     setCurrentMatch(match || null);
                   }}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">-- Select Match --</option>
-                  {currentSportMatches.map((match) => (
-                    <option key={match.id} value={match.id}>
-                      {match.date} - {match.description || "No description"}
-                    </option>
-                  ))}
-                </select>
+                  options={currentSportMatches.map((match) => ({
+                    value: match.id,
+                    label: `${match.date} - ${match.description || "No description"}`,
+                  }))}
+                  placeholder="-- Select Match --"
+                  focusColor="green"
+                />
               </div>
             )}
+            </div>
           </div>
         )}
 
         {/* Team Selection */}
         {currentMatch && (
-          <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-yellow-500/50 transition-all duration-300 animate-slide-up">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <FaUsers className="text-xl text-yellow-400" />
-                <h2 className="text-xl font-semibold">Team</h2>
+          <div className="bg-gradient-to-br from-gray-800 to-gray-800/50 rounded-xl p-6 shadow-2xl border border-gray-700/50 hover:border-yellow-500/50 transition-all duration-300 animate-slide-up backdrop-blur-sm relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/0 to-yellow-500/0 group-hover:from-yellow-500/5 group-hover:to-transparent transition-all duration-300"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-yellow-500/20 rounded-lg group-hover:bg-yellow-500/30 transition-colors">
+                    <FaUsers className="text-2xl text-yellow-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">Team</h2>
+                </div>
+                {isAuthenticated && (
+                    <button
+                      onClick={handleCreateTeam}
+                      className="px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-yellow-400/30"
+                      aria-label="Create new team"
+                    >
+                      <FaPlus className="text-sm" />
+                      New Team
+                    </button>
+                )}
               </div>
-              {isAuthenticated && (
-                <button
-                  onClick={handleCreateTeam}
-                  className="px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  <FaPlus className="text-sm" />
-                  New Team
-                </button>
-              )}
-            </div>
 
             {currentTeam && (
-              <div className="space-y-3 mb-4 animate-fade-in">
-                <div className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
-                  <h3 className="text-lg font-semibold text-yellow-400 flex items-center gap-2">
-                    <FaUsers className="text-yellow-400" />
-                    {currentTeam.name}
-                  </h3>
+              <div className="space-y-4 mb-4 animate-fade-in">
+                <div className="flex items-center justify-between bg-gradient-to-r from-yellow-900/30 to-yellow-800/20 rounded-xl p-4 border border-yellow-500/30 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
+                  <div className="flex items-center gap-3">
+                    {/* Team Logo/Emblem */}
+                    {isAuthenticated ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowLogoModal(true)}
+                        className="relative w-16 h-16 flex items-center justify-center bg-yellow-500/20 rounded-lg border border-yellow-500/30 overflow-hidden hover:bg-yellow-500/30 transition-colors cursor-pointer"
+                        aria-label="Change team logo"
+                      >
+                        {currentTeam.logo ? (
+                          <img
+                            src={currentTeam.logo.startsWith('data:') ? currentTeam.logo : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(currentTeam.logo)}`}
+                            alt={`${currentTeam.name} logo`}
+                            className="w-full h-full object-contain p-1"
+                            onError={(e) => {
+                              // Fallback to default icon on error
+                              e.currentTarget.style.display = 'none';
+                              const parent = e.currentTarget.parentElement;
+                              if (parent) {
+                                parent.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>';
+                              }
+                            }}
+                          />
+                        ) : (
+                          <FaFlag className="text-2xl text-yellow-400" />
+                        )}
+                      </button>
+                    ) : (
+                      <div className="relative w-16 h-16 flex items-center justify-center bg-yellow-500/20 rounded-lg border border-yellow-500/30 overflow-hidden">
+                        {currentTeam.logo ? (
+                          <img
+                            src={currentTeam.logo.startsWith('data:') ? currentTeam.logo : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(currentTeam.logo)}`}
+                            alt={`${currentTeam.name} logo`}
+                            className="w-full h-full object-contain p-1"
+                            onError={(e) => {
+                              // Fallback to default icon on error
+                              e.currentTarget.style.display = 'none';
+                              const parent = e.currentTarget.parentElement;
+                              if (parent) {
+                                parent.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>';
+                              }
+                            }}
+                          />
+                        ) : (
+                          <FaFlag className="text-2xl text-yellow-400" />
+                        )}
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-xl font-bold text-yellow-400">{currentTeam.name}</h3>
+                      <div className="flex items-center gap-3 mt-1">
+                        {teamCode && (
+                          <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-300 text-xs font-semibold rounded-lg border border-yellow-500/30">
+                            Code: {teamCode}
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                          <FaUser className="text-yellow-400" /> {players.length} {players.length === 1 ? 'player' : 'players'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                   {isAuthenticated && (
                     <button
                       onClick={() => handleDeleteTeam(currentTeam.id)}
-                      className="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                      className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded-lg transition-all duration-200 text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-red-400/30"
+                      aria-label={`Delete team ${currentTeam.name}`}
                     >
                       <FaTrash className="text-xs" />
                       Delete
@@ -835,25 +783,49 @@ function App() {
                     </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
-                        <FaUsers className="text-gray-400" />
-                        Team Name
-                      </label>
-                      <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
-                        {currentTeam.name}
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                          <FaUsers className="text-gray-400" />
+                          Team Name
+                        </label>
+                        <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300">
+                          {currentTeam.name}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                          <FaTag className="text-gray-400" />
+                          Team Code
+                        </label>
+                        <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300 uppercase">
+                          {teamCode || "Not set"}
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
-                        <FaTag className="text-gray-400" />
-                        Team Code
-                      </label>
-                      <div className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-300 uppercase">
-                        {teamCode || "Not set"}
+                    {currentTeam.logo && (
+                      <div>
+                        <label className="block text-sm font-medium mb-1 flex items-center gap-2 text-gray-400">
+                          <FaImage className="text-gray-400" />
+                          Team Logo
+                        </label>
+                        <div className="w-20 h-20 flex items-center justify-center bg-gray-700/50 border border-gray-600 rounded-lg overflow-hidden">
+                          <img
+                            src={currentTeam.logo.startsWith('data:') ? currentTeam.logo : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(currentTeam.logo)}`}
+                            alt={`${currentTeam.name} logo`}
+                            className="w-full h-full object-contain p-1"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const parent = e.currentTarget.parentElement;
+                              if (parent) {
+                                parent.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>';
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -861,24 +833,23 @@ function App() {
 
             {currentMatchTeams.length > 0 && (
               <div>
-                <label className="block text-sm font-medium mb-2">Select Team</label>
-                <select
+                <label className="block text-sm font-medium mb-2 text-gray-300">Select Team</label>
+                <CustomSelect
                   value={currentTeam?.id || ""}
-                  onChange={(e) => {
-                    const team = currentMatchTeams.find((t) => t.id === e.target.value);
+                  onChange={(value) => {
+                    const team = currentMatchTeams.find((t) => t.id === value);
                     setCurrentTeam(team || null);
                   }}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">-- Select Team --</option>
-                  {currentMatchTeams.map((team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.name} ({team.team_code})
-                    </option>
-                  ))}
-                </select>
+                  options={currentMatchTeams.map((team) => ({
+                    value: team.id,
+                    label: `${team.name} (${team.team_code})`,
+                  }))}
+                  placeholder="-- Select Team --"
+                  focusColor="yellow"
+                />
               </div>
             )}
+            </div>
           </div>
         )}
 

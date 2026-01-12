@@ -23,7 +23,7 @@ async function checkServerAvailable(): Promise<boolean> {
   console.log('🔍 Checking if server is available...');
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout (increased)
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT.API_REQUEST);
     
     const response = await fetch('/api/sports', { 
       method: 'GET',
@@ -45,15 +45,17 @@ async function checkServerAvailable(): Promise<boolean> {
 // API base URL for web version
 const API_BASE_URL = '/api';
 
+import { STORAGE_KEYS, DATA_FILES, TIMEOUT, DEFAULTS } from '../constants';
+
 // Storage keys for web version (localStorage fallback)
-const SPORTS_KEY = "sports";
-const MATCHES_KEY = "matches";
-const TEAMS_KEY = "teams";
+const SPORTS_KEY = STORAGE_KEYS.SPORTS;
+const MATCHES_KEY = STORAGE_KEYS.MATCHES;
+const TEAMS_KEY = STORAGE_KEYS.TEAMS;
 
 // File names for Tauri version
-const SPORTS_FILE = "sports.json";
-const MATCHES_FILE = "matches.json";
-const TEAMS_FILE = "teams.json";
+const SPORTS_FILE = DATA_FILES.SPORTS;
+const MATCHES_FILE = DATA_FILES.MATCHES;
+const TEAMS_FILE = DATA_FILES.TEAMS;
 
 // Lazy load Tauri APIs
 let tauriInvoke: any = null;
@@ -160,11 +162,11 @@ export async function saveSports(sports: Sport[]): Promise<void> {
     if (!invoke) return;
     await invoke("write_file", {
       path: SPORTS_FILE,
-      contents: JSON.stringify(sports, null, 2)
+      contents: JSON.stringify(sports, null, DEFAULTS.JSON_INDENT)
     });
   } else {
     // Always save to localStorage as backup
-    localStorage.setItem(SPORTS_KEY, JSON.stringify(sports, null, 2));
+    localStorage.setItem(SPORTS_KEY, JSON.stringify(sports, null, DEFAULTS.JSON_INDENT));
     
     // Try to save to server if available
     const serverAvailable = await checkServerAvailable();
@@ -216,11 +218,11 @@ export async function saveMatches(matches: Match[]): Promise<void> {
     if (!invoke) return;
     await invoke("write_file", {
       path: MATCHES_FILE,
-      contents: JSON.stringify(matches, null, 2)
+      contents: JSON.stringify(matches, null, DEFAULTS.JSON_INDENT)
     });
   } else {
     // Always save to localStorage as backup
-    localStorage.setItem(MATCHES_KEY, JSON.stringify(matches, null, 2));
+    localStorage.setItem(MATCHES_KEY, JSON.stringify(matches, null, DEFAULTS.JSON_INDENT));
     
     // Try to save to server if available
     const serverAvailable = await checkServerAvailable();
@@ -267,24 +269,38 @@ export async function loadTeams(): Promise<Team[]> {
 }
 
 export async function saveTeams(teams: Team[]): Promise<void> {
+  console.log('🔍 saveTeams called, teams count:', teams.length);
+  const teamWithLogo = teams.find(t => t.logo);
+  if (teamWithLogo) {
+    console.log('🔍 Team with logo found:', teamWithLogo.id, teamWithLogo.name, 'logo length:', teamWithLogo.logo?.length || 0);
+  }
+  
   if (isTauri) {
     const invoke = await getTauriInvoke();
     if (!invoke) return;
+    const jsonContent = JSON.stringify(teams, null, DEFAULTS.JSON_INDENT);
+    console.log('🔍 Saving to Tauri file, JSON length:', jsonContent.length);
     await invoke("write_file", {
       path: TEAMS_FILE,
-      contents: JSON.stringify(teams, null, 2)
+      contents: jsonContent
     });
+    console.log('✅ Saved to Tauri file');
   } else {
     // Always save to localStorage as backup
-    localStorage.setItem(TEAMS_KEY, JSON.stringify(teams, null, 2));
+    const jsonContent = JSON.stringify(teams, null, DEFAULTS.JSON_INDENT);
+    console.log('🔍 Saving to localStorage, JSON length:', jsonContent.length);
+    localStorage.setItem(TEAMS_KEY, jsonContent);
+    console.log('✅ Saved to localStorage');
     
     // Try to save to server if available
     const serverAvailable = await checkServerAvailable();
     if (serverAvailable) {
       try {
+        console.log('🔍 Saving to server...');
         await apiCall('/teams', 'POST', teams);
+        console.log('✅ Saved to server');
       } catch (error) {
-        console.error('Error saving to server, using localStorage:', error);
+        console.error('❌ Error saving to server, using localStorage:', error);
       }
     }
   }
@@ -332,12 +348,12 @@ export async function savePlayers(teamId: string, players: Player[]): Promise<vo
       const fileName = `players-${teamId}.json`;
       await invoke("write_file", {
         path: fileName,
-        contents: JSON.stringify(players, null, 2)
+        contents: JSON.stringify(players, null, DEFAULTS.JSON_INDENT)
       });
     } else {
       // Always save to localStorage as backup
       const key = `players-${teamId}`;
-      localStorage.setItem(key, JSON.stringify(players, null, 2));
+      localStorage.setItem(key, JSON.stringify(players, null, DEFAULTS.JSON_INDENT));
       
       // Try to save to server if available
       const serverAvailable = await checkServerAvailable();

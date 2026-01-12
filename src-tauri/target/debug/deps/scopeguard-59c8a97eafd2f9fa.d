@@ -1,0 +1,7 @@
+/Users/icom4/Desktop/Sport Metadata/src-tauri/target/debug/deps/scopeguard-59c8a97eafd2f9fa.d: /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/scopeguard-1.2.0/src/lib.rs
+
+/Users/icom4/Desktop/Sport Metadata/src-tauri/target/debug/deps/libscopeguard-59c8a97eafd2f9fa.rlib: /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/scopeguard-1.2.0/src/lib.rs
+
+/Users/icom4/Desktop/Sport Metadata/src-tauri/target/debug/deps/libscopeguard-59c8a97eafd2f9fa.rmeta: /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/scopeguard-1.2.0/src/lib.rs
+
+/Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/scopeguard-1.2.0/src/lib.rs:

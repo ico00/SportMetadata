@@ -3,6 +3,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const { login, verifyToken, authMiddleware, isLocalhost } = require('./auth.cjs');
+const { validateSports, validateMatches, validateTeams, validatePlayers } = require('./validation.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -105,9 +106,17 @@ app.get('/api/sports', (req, res) => {
 app.post('/api/sports', authMiddleware, (req, res) => {
   console.log('📥 POST /api/sports', req.body);
   const sports = req.body;
-  if (writeJsonFile('sports.json', sports)) {
+  
+  // Validate data
+  const validation = validateSports(sports);
+  if (!validation.valid) {
+    console.error('❌ Validation error:', validation.error);
+    return res.status(400).json({ error: validation.error });
+  }
+  
+  if (writeJsonFile('sports.json', validation.data)) {
     console.log('✅ Sports saved successfully');
-    res.json({ success: true, sports });
+    res.json({ success: true, sports: validation.data });
   } else {
     console.error('❌ Error saving sports');
     res.status(500).json({ error: 'Error saving sports' });
@@ -125,9 +134,17 @@ app.get('/api/matches', (req, res) => {
 app.post('/api/matches', authMiddleware, (req, res) => {
   console.log('📥 POST /api/matches', req.body);
   const matches = req.body;
-  if (writeJsonFile('matches.json', matches)) {
+  
+  // Validate data
+  const validation = validateMatches(matches);
+  if (!validation.valid) {
+    console.error('❌ Validation error:', validation.error);
+    return res.status(400).json({ error: validation.error });
+  }
+  
+  if (writeJsonFile('matches.json', validation.data)) {
     console.log('✅ Matches saved successfully');
-    res.json({ success: true, matches });
+    res.json({ success: true, matches: validation.data });
   } else {
     console.error('❌ Error saving matches');
     res.status(500).json({ error: 'Error saving matches' });
@@ -145,9 +162,31 @@ app.get('/api/teams', (req, res) => {
 app.post('/api/teams', authMiddleware, (req, res) => {
   console.log('📥 POST /api/teams', req.body);
   const teams = req.body;
-  if (writeJsonFile('teams.json', teams)) {
+  
+  // Check if any team has logo before validation
+  const teamWithLogo = teams.find(t => t.logo);
+  if (teamWithLogo) {
+    console.log('🔍 Team with logo in request:', teamWithLogo.id, teamWithLogo.name, 'logo length:', teamWithLogo.logo?.length || 0);
+  }
+  
+  // Validate data
+  const validation = validateTeams(teams);
+  if (!validation.valid) {
+    console.error('❌ Validation error:', validation.error);
+    return res.status(400).json({ error: validation.error });
+  }
+  
+  // Check if validated data has logo
+  const validatedTeamWithLogo = validation.data.find(t => t.logo);
+  if (validatedTeamWithLogo) {
+    console.log('🔍 Team with logo after validation:', validatedTeamWithLogo.id, validatedTeamWithLogo.name, 'logo length:', validatedTeamWithLogo.logo?.length || 0);
+  } else if (teamWithLogo) {
+    console.error('❌ Logo was lost during validation!');
+  }
+  
+  if (writeJsonFile('teams.json', validation.data)) {
     console.log('✅ Teams saved successfully');
-    res.json({ success: true, teams });
+    res.json({ success: true, teams: validation.data });
   } else {
     console.error('❌ Error saving teams');
     res.status(500).json({ error: 'Error saving teams' });
@@ -168,10 +207,18 @@ app.post('/api/players/:teamId', authMiddleware, (req, res) => {
   const { teamId } = req.params;
   console.log(`📥 POST /api/players/${teamId}`, req.body);
   const players = req.body;
+  
+  // Validate data
+  const validation = validatePlayers(players);
+  if (!validation.valid) {
+    console.error('❌ Validation error:', validation.error);
+    return res.status(400).json({ error: validation.error });
+  }
+  
   const filename = `players-${teamId}.json`;
-  if (writeJsonFile(filename, players)) {
+  if (writeJsonFile(filename, validation.data)) {
     console.log(`✅ Players saved successfully for team ${teamId}`);
-    res.json({ success: true, players });
+    res.json({ success: true, players: validation.data });
   } else {
     console.error(`❌ Error saving players for team ${teamId}`);
     res.status(500).json({ error: 'Error saving players' });

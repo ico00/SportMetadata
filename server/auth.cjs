@@ -9,6 +9,29 @@ const isLocalhost = process.env.NODE_ENV !== 'production' ||
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sprTmdatA9823-918!'; // Default za development
 const JWT_SECRET = process.env.JWT_SECRET || 'sport-metadata-secret-key-change-in-production';
 
+// Security validation for production
+const DEFAULT_PASSWORD = 'sprTmdatA9823-918!';
+const DEFAULT_JWT_SECRET = 'sport-metadata-secret-key-change-in-production';
+
+// Validate environment variables in production
+if (process.env.NODE_ENV === 'production' && !isLocalhost) {
+  if (!process.env.ADMIN_PASSWORD) {
+    throw new Error('ADMIN_PASSWORD environment variable must be set in production');
+  }
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable must be set in production');
+  }
+  if (process.env.ADMIN_PASSWORD === DEFAULT_PASSWORD) {
+    throw new Error('Default ADMIN_PASSWORD cannot be used in production. Please set a secure password.');
+  }
+  if (process.env.JWT_SECRET === DEFAULT_JWT_SECRET) {
+    throw new Error('Default JWT_SECRET cannot be used in production. Please set a secure secret key.');
+  }
+  if (process.env.JWT_SECRET.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters long in production');
+  }
+}
+
 /**
  * Proverava admin lozinku i vraća JWT token
  */

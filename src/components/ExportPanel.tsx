@@ -1,5 +1,7 @@
+import { memo } from "react";
 import { Player, Team, Match } from "../types";
-import { FaFileExport } from "react-icons/fa";
+import { sortPlayerNumber } from "../utils/sortUtils";
+import { FaFileExport, FaCheckCircle, FaExclamationCircle, FaUsers, FaInfoCircle } from "react-icons/fa";
 
 interface ExportPanelProps {
   players: Player[];
@@ -9,7 +11,7 @@ interface ExportPanelProps {
   onExport: () => void;
 }
 
-export default function ExportPanel({
+const ExportPanel = memo(function ExportPanel({
   players,
   teamCode,
   allTeams,
@@ -19,28 +21,14 @@ export default function ExportPanel({
   const validPlayers = players.filter((p) => p.valid);
   const invalidPlayers = players.filter((p) => !p.valid);
 
-  // Sort function that handles both numbers and letters
-  const sortPlayerNumber = (a: string, b: string): number => {
-    const aIsNumber = !isNaN(Number(a));
-    const bIsNumber = !isNaN(Number(b));
-    
-    if (aIsNumber && bIsNumber) {
-      return Number(a) - Number(b);
-    }
-    if (!aIsNumber && !bIsNumber) {
-      return a.localeCompare(b);
-    }
-    if (aIsNumber && !bIsNumber) return -1;
-    if (!aIsNumber && bIsNumber) return 1;
-    return 0;
-  };
-
   const previewLines = validPlayers
     .sort((a, b) => sortPlayerNumber(a.player_number, b.player_number))
-    .map(
-      (player) =>
-        `${teamCode}${player.player_number}\t${player.first_name} ${player.last_name} (${player.player_number})`
-    );
+    .map((player) => {
+      const namePart = player.first_name?.trim() 
+        ? `${player.first_name} ${player.last_name}`
+        : player.last_name;
+      return `${teamCode}${player.player_number}\t${namePart} (${player.player_number})`;
+    });
 
   const allTeamsCount = allTeams?.length || 0;
 
@@ -65,53 +53,89 @@ export default function ExportPanel({
 
   const exportFileName = getExportFileName();
 
-  return (
-    <div className="bg-gray-800 rounded-lg p-4 shadow-xl border border-gray-700 hover:border-emerald-500/50 transition-all duration-300 animate-slide-up">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <FaFileExport className="text-emerald-400" />
-        Export
-      </h2>
+  const validPercentage = players.length > 0 ? (validPlayers.length / players.length) * 100 : 0;
 
-      <div className="space-y-4">
-        {allTeamsCount > 0 && (
-          <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3">
-            <p className="text-sm text-blue-400">
-              ℹ️ Export will include <span className="font-semibold">{allTeamsCount}</span> {allTeamsCount === 1 ? 'team' : 'teams'} from the match
-            </p>
+  return (
+    <div className="bg-gradient-to-br from-gray-800 to-gray-800/50 rounded-xl p-6 shadow-2xl border border-gray-700/50 hover:border-emerald-500/50 transition-all duration-300 animate-slide-up backdrop-blur-sm relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 to-emerald-500/0 group-hover:from-emerald-500/5 group-hover:to-transparent transition-all duration-300"></div>
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-emerald-500/20 rounded-lg group-hover:bg-emerald-500/30 transition-colors">
+            <FaFileExport className="text-2xl text-emerald-400" />
           </div>
-        )}
-        <div className="bg-gray-700 rounded-lg p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Statistics:</span>
-          </div>
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="text-gray-400">Total players:</span>{" "}
-              <span className="font-semibold">{players.length}</span>
-            </div>
-            <div>
-              <span className="text-gray-400">Valid:</span>{" "}
-              <span className="font-semibold text-green-400">
-                {validPlayers.length}
-              </span>
-            </div>
-            <div>
-              <span className="text-gray-400">Invalid:</span>{" "}
-              <span className="font-semibold text-red-400">
-                {invalidPlayers.length}
-              </span>
-            </div>
-          </div>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+            Export
+          </h2>
         </div>
 
+        <div className="space-y-4">
+          {allTeamsCount > 0 && (
+            <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-4 shadow-lg backdrop-blur-sm">
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 bg-blue-500/20 rounded-lg mt-0.5">
+                  <FaInfoCircle className="text-blue-400 text-sm" />
+                </div>
+                <p className="text-sm text-blue-300 flex-1">
+                  Export will include <span className="font-bold text-blue-200">{allTeamsCount}</span> {allTeamsCount === 1 ? 'team' : 'teams'} from the match
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="bg-gradient-to-r from-gray-700/80 to-gray-700/60 rounded-xl p-4 border border-gray-600/50 shadow-lg backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-bold text-gray-200 uppercase tracking-wider">Statistics</span>
+              <span className="text-xs text-emerald-400 font-semibold">{validPercentage.toFixed(0)}% Ready</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 rounded-lg p-3 border border-gray-600/30">
+                <div className="flex items-center gap-2 mb-1">
+                  <FaUsers className="text-gray-400 text-sm" />
+                  <span className="text-xs text-gray-400 font-medium">Total Players</span>
+                </div>
+                <span className="text-2xl font-bold text-gray-200">{players.length}</span>
+              </div>
+              <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 rounded-lg p-3 border border-green-500/30">
+                <div className="flex items-center gap-2 mb-1">
+                  <FaCheckCircle className="text-green-400 text-sm" />
+                  <span className="text-xs text-green-400 font-medium">Valid</span>
+                </div>
+                <span className="text-2xl font-bold text-green-400">{validPlayers.length}</span>
+              </div>
+              <div className="bg-gradient-to-br from-red-900/30 to-red-800/20 rounded-lg p-3 border border-red-500/30">
+                <div className="flex items-center gap-2 mb-1">
+                  <FaExclamationCircle className="text-red-400 text-sm" />
+                  <span className="text-xs text-red-400 font-medium">Invalid</span>
+                </div>
+                <span className="text-2xl font-bold text-red-400">{invalidPlayers.length}</span>
+              </div>
+            </div>
+            {players.length > 0 && (
+              <div className="mt-4">
+                <div className="h-2 bg-gray-600/50 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full transition-all duration-500"
+                    style={{ width: `${validPercentage}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+          </div>
+
         {invalidPlayers.length > 0 && (
-          <div className="bg-red-900/20 border border-red-700 rounded-lg p-3">
-            <p className="text-sm text-red-400 mb-2">
-              ⚠️ There are invalid players that will not be included in the export:
-            </p>
-            <ul className="list-disc list-inside text-sm text-red-300">
+          <div className="bg-gradient-to-r from-red-900/30 to-red-800/20 border border-red-500/30 rounded-xl p-4 shadow-lg backdrop-blur-sm">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="p-1.5 bg-red-500/20 rounded-lg mt-0.5">
+                <FaExclamationCircle className="text-red-400 text-sm" />
+              </div>
+              <p className="text-sm text-red-300 font-medium flex-1">
+                There are invalid players that will not be included in the export:
+              </p>
+            </div>
+            <ul className="list-none space-y-1 text-sm text-red-200 ml-8">
               {invalidPlayers.map((player) => (
-                <li key={player.id}>{player.raw_input}</li>
+                <li key={player.id} className="flex items-center gap-2 before:content-['•'] before:text-red-400 before:font-bold">
+                  <span className="font-mono text-xs bg-red-900/30 px-2 py-1 rounded border border-red-500/30">{player.raw_input}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -119,17 +143,22 @@ export default function ExportPanel({
 
         {validPlayers.length > 0 && (
           <>
-            <div className="bg-gray-700 rounded-lg p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Export Preview:</span>
-                <span className="text-xs text-gray-400 font-mono">
+            <div className="bg-gradient-to-r from-gray-700/80 to-gray-700/60 rounded-xl p-4 border border-gray-600/50 shadow-lg backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-bold text-gray-200 uppercase tracking-wider flex items-center gap-2">
+                  <div className="p-1 bg-emerald-500/20 rounded">
+                    <FaFileExport className="text-emerald-400 text-xs" />
+                  </div>
+                  Export Preview
+                </span>
+                <span className="text-xs text-emerald-400 font-mono bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/30">
                   {exportFileName}
                 </span>
               </div>
-              <pre className="text-xs text-gray-300 font-mono bg-gray-800 p-3 rounded overflow-x-auto max-h-60 overflow-y-auto">
+              <pre className="text-xs text-gray-300 font-mono bg-gray-900/50 p-4 rounded-lg overflow-x-auto max-h-60 overflow-y-auto border border-gray-700/50 shadow-inner">
                 {previewLines.join("\n")}
                 {allTeamsCount > 1 && (
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 italic">
                     {"\n"}... (and other teams from the match)
                   </span>
                 )}
@@ -139,22 +168,32 @@ export default function ExportPanel({
             <button
               onClick={onExport}
               disabled={!teamCode || validPlayers.length === 0}
-              className="w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none font-semibold"
+              className="w-full px-6 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 disabled:from-gray-600 disabled:to-gray-500 disabled:cursor-not-allowed rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] disabled:transform-none font-bold text-lg border border-emerald-400/30 disabled:border-gray-500/30"
+              aria-label={allTeamsCount > 1 ? `Export all ${allTeamsCount} teams` : "Export TXT file"}
             >
-              <FaFileExport />
-              {allTeamsCount > 1 
-                ? `Export All Teams (${allTeamsCount})` 
-                : "Export TXT File"}
+              <FaFileExport className="text-xl" />
+              <span>
+                {allTeamsCount > 1 
+                  ? `Export All Teams (${allTeamsCount})` 
+                  : "Export TXT File"}
+              </span>
             </button>
           </>
         )}
 
         {validPlayers.length === 0 && (
-          <p className="text-gray-400 text-center py-4">
-            No valid players for export.
-          </p>
+          <div className="text-center py-8 animate-fade-in">
+            <div className="p-3 bg-gray-700/30 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+              <FaFileExport className="text-2xl text-gray-500" />
+            </div>
+            <p className="text-gray-400 text-lg font-medium">No valid players for export</p>
+            <p className="text-gray-500 text-sm mt-1">Add and validate players first</p>
+          </div>
         )}
+      </div>
       </div>
     </div>
   );
-}
+});
+
+export default ExportPanel;

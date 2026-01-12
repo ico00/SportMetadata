@@ -2,217 +2,217 @@
   {
     "id": "1768040158990-0",
     "player_number": "1",
+    "team_code": "c",
     "first_name": "Ivan",
     "last_name": "VILLAR",
     "raw_input": "1 Ivan Villar",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-1",
     "player_number": "2",
+    "team_code": "c",
     "first_name": "Carl",
     "last_name": "STARFELT",
     "raw_input": "2 Carl Starfelt",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-2",
     "player_number": "8",
+    "team_code": "c",
     "first_name": "Fran",
     "last_name": "BELTRÁN",
     "raw_input": "8 Fran Beltrán",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-3",
     "player_number": "10",
+    "team_code": "c",
     "first_name": "Iago",
     "last_name": "ASPAS",
     "raw_input": "10 Iago Aspas",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-4",
     "player_number": "15",
+    "team_code": "c",
     "first_name": "Bryan",
     "last_name": "ZARAGOZA",
     "raw_input": "15 Bryan Zaragoza",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-5",
     "player_number": "16",
+    "team_code": "c",
     "first_name": "Miguel",
     "last_name": "ROMÁN",
     "raw_input": "16 Miguel Román",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-6",
     "player_number": "18",
+    "team_code": "c",
     "first_name": "Pablo",
     "last_name": "DURÁN",
     "raw_input": "18 Pablo Durán",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-7",
     "player_number": "21",
+    "team_code": "c",
     "first_name": "Mihailo",
     "last_name": "RISTIĆ",
     "raw_input": "21 Mihailo Ristić",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-8",
     "player_number": "24",
+    "team_code": "c",
     "first_name": "Carlos",
     "last_name": "DOMINGUEZ",
     "raw_input": "24 Carlos Dominguez",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-9",
     "player_number": "32",
+    "team_code": "c",
     "first_name": "Javi",
     "last_name": "RODRÍGUEZ",
     "raw_input": "32 Javi Rodríguez",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-10",
     "player_number": "39",
+    "team_code": "c",
     "first_name": "Jones",
     "last_name": "EL-ABDELLAOUI",
     "raw_input": "39 Jones El-Abdellaoui",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-11",
     "player_number": "25",
+    "team_code": "c",
     "first_name": "Marc",
     "last_name": "VIDAL",
     "raw_input": "25 Marc Vidal",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-12",
     "player_number": "40",
+    "team_code": "c",
     "first_name": "Marcos Marcos",
     "last_name": "GONZÁLEZ",
     "raw_input": "40 Marcos Marcos González",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-13",
     "player_number": "3",
+    "team_code": "c",
     "first_name": "Oscar",
     "last_name": "MINGUEZA",
     "raw_input": "3 Oscar Mingueza",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-14",
     "player_number": "5",
+    "team_code": "c",
     "first_name": "Sergio",
     "last_name": "CARREIRA",
     "raw_input": "5 Sergio Carreira",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-15",
     "player_number": "6",
+    "team_code": "c",
     "first_name": "Ilaix",
     "last_name": "MORIBA",
     "raw_input": "6 Ilaix Moriba",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-16",
     "player_number": "7",
+    "team_code": "c",
     "first_name": "Borja",
     "last_name": "IGLESIAS",
     "raw_input": "7 Borja Iglesias",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-17",
     "player_number": "9",
+    "team_code": "c",
     "first_name": "Ferran",
     "last_name": "JUTGLÀ",
     "raw_input": "9 Ferran Jutglà",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-18",
     "player_number": "12",
+    "team_code": "c",
     "first_name": "Manuel",
     "last_name": "FERNÁNDEZ",
     "raw_input": "12 Manuel Fernández",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-19",
     "player_number": "14",
+    "team_code": "c",
     "first_name": "Damian",
     "last_name": "RODRIGUEZ",
     "raw_input": "14 Damian Rodriguez",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-20",
     "player_number": "20",
+    "team_code": "c",
     "first_name": "Marcos",
     "last_name": "ALONSO",
     "raw_input": "20 Marcos Alonso",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-21",
     "player_number": "22",
+    "team_code": "c",
     "first_name": "Hugo",
     "last_name": "SOTELO",
     "raw_input": "22 Hugo Sotelo",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-22",
     "player_number": "29",
+    "team_code": "c",
     "first_name": "Yoel",
     "last_name": "LAGO",
     "raw_input": "29 Yoel Lago",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   },
   {
     "id": "1768040158990-23",
     "player_number": "c",
+    "team_code": "c",
     "first_name": "Claudio",
     "last_name": "GIRALDEZ",
     "raw_input": "c Claudio Giraldez",
-    "valid": true,
-    "team_code": "c"
+    "valid": true
   }
 ]

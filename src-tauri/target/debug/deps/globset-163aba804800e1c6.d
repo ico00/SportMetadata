@@ -1,0 +1,10 @@
+/Users/icom4/Desktop/Sport Metadata/src-tauri/target/debug/deps/globset-163aba804800e1c6.d: /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/lib.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/fnv.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/glob.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/pathutil.rs
+
+/Users/icom4/Desktop/Sport Metadata/src-tauri/target/debug/deps/libglobset-163aba804800e1c6.rlib: /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/lib.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/fnv.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/glob.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/pathutil.rs
+
+/Users/icom4/Desktop/Sport Metadata/src-tauri/target/debug/deps/libglobset-163aba804800e1c6.rmeta: /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/lib.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/fnv.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/glob.rs /Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/pathutil.rs
+
+/Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/lib.rs:
+/Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/fnv.rs:
+/Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/glob.rs:
+/Users/icom4/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/globset-0.4.18/src/pathutil.rs:

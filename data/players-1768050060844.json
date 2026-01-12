@@ -1,0 +1,209 @@
+[
+  {
+    "id": "1768050115357-0",
+    "player_number": "1",
+    "first_name": "Alvaro",
+    "last_name": "VALLES",
+    "raw_input": "1 Alvaro Valles",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-1",
+    "player_number": "3",
+    "first_name": "Diego",
+    "last_name": "LLORENTE",
+    "raw_input": "3 Diego Llorente",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-2",
+    "player_number": "4",
+    "first_name": "",
+    "last_name": "NATAN",
+    "raw_input": "4 Natan",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-3",
+    "player_number": "6",
+    "first_name": "Sergi",
+    "last_name": "ALTIMIRA",
+    "raw_input": "6 Sergi Altimira",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-4",
+    "player_number": "7",
+    "first_name": "",
+    "last_name": "ANTONY",
+    "raw_input": "7 Antony",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-5",
+    "player_number": "10",
+    "first_name": "Abde",
+    "last_name": "EZZALZOULI",
+    "raw_input": "10 Abde Ezzalzouli",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-6",
+    "player_number": "11",
+    "first_name": "Cedric",
+    "last_name": "BAKAMBU",
+    "raw_input": "11 Cédric Bakambu",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-7",
+    "player_number": "16",
+    "first_name": "Valentin",
+    "last_name": "GOMEZ",
+    "raw_input": "16 Valentin Gomez",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-8",
+    "player_number": "17",
+    "first_name": "Rodrigo",
+    "last_name": "RIQUELME",
+    "raw_input": "17 Rodrigo Riquelme",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-9",
+    "player_number": "18",
+    "first_name": "Nelson",
+    "last_name": "DEOSSA",
+    "raw_input": "18 Nelson Deossa",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-10",
+    "player_number": "40",
+    "first_name": "Angel",
+    "last_name": "ORTIZ",
+    "raw_input": "40 Angel Ortiz",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-11",
+    "player_number": "13",
+    "first_name": "",
+    "last_name": "ADRIAN",
+    "raw_input": "13 Adrián",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-12",
+    "player_number": "25",
+    "first_name": "Pau",
+    "last_name": "LOPEZ",
+    "raw_input": "25 Pau López",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-13",
+    "player_number": "5",
+    "first_name": "Marc",
+    "last_name": "BARTRA",
+    "raw_input": "5 Marc Bartra",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-14",
+    "player_number": "8",
+    "first_name": "Pablo",
+    "last_name": "FORNALS",
+    "raw_input": "8 Pablo Fornals",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-15",
+    "player_number": "9",
+    "first_name": "Chimy",
+    "last_name": "AVILA",
+    "raw_input": "9 Chimy Ávila",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-16",
+    "player_number": "19",
+    "first_name": "Cucho",
+    "last_name": "HERNANDEZ",
+    "raw_input": "19 Cucho Hernández",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-17",
+    "player_number": "20",
+    "first_name": "Giovani Lo",
+    "last_name": "CELSO",
+    "raw_input": "20 Giovani Lo Celso",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-18",
+    "player_number": "21",
+    "first_name": "Marc",
+    "last_name": "ROCA",
+    "raw_input": "21 Marc Roca",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-19",
+    "player_number": "24",
+    "first_name": "Aitor",
+    "last_name": "RUIBAL",
+    "raw_input": "24 Aitor Ruibal",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-20",
+    "player_number": "33",
+    "first_name": "Carlos De",
+    "last_name": "ROA",
+    "raw_input": "33 Carlos De Roa",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-21",
+    "player_number": "52",
+    "first_name": "Pablo",
+    "last_name": "GARCIA",
+    "raw_input": "52 Pablo Garcia",
+    "valid": true,
+    "team_code": "r"
+  },
+  {
+    "id": "1768050115357-22",
+    "player_number": "c",
+    "first_name": "Manuel",
+    "last_name": "PELLEGRINI",
+    "raw_input": "c Manuel Pellegrini",
+    "valid": true,
+    "team_code": "r"
+  }
+]

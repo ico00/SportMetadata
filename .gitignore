@@ -9,12 +9,8 @@ lerna-debug.log*
 
 node_modules
 dist
-dist-web
 dist-ssr
 *.local
-
-# Fly.io
-.fly/
 
 # Editor directories and files
 .vscode/*
@@ -27,8 +23,14 @@ dist-ssr
 *.sln
 *.sw?
 
-# Tauri
-src-tauri/target
+# Environment variables
+.env
+.env.local
+.env.*.local
 
-# Data directory (JSON files) - temporarily enabled for initial data seeding
-# data/
+# Test coverage
+coverage
+.nyc_output
+
+# Vitest
+.vitest

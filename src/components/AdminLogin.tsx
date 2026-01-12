@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FaLock, FaEye, FaTimes } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import { TIMEOUT } from "../constants";
 
 interface AdminLoginProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ export default function AdminLogin({ isOpen, onClose }: AdminLoginProps) {
     if (isAuthenticated && isOpen) {
       const timer = setTimeout(() => {
         onClose();
-      }, 100);
+      }, TIMEOUT.LOGIN_MODAL_CLOSE);
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated, isOpen, onClose]);
@@ -38,6 +39,7 @@ export default function AdminLogin({ isOpen, onClose }: AdminLoginProps) {
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
+            aria-label="Close login modal"
           >
             <FaTimes className="h-5 w-5" />
           </button>
@@ -122,6 +124,7 @@ export default function AdminLogin({ isOpen, onClose }: AdminLoginProps) {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
               </button>

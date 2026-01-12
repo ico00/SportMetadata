@@ -49,7 +49,7 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     return fullText;
   } catch (error) {
     console.error('Error extracting text from PDF:', error);
-    throw new Error(`Greška pri čitanju PDF datoteke: ${error instanceof Error ? error.message : 'Nepoznata greška'}`);
+    throw new Error(`Error reading PDF file: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

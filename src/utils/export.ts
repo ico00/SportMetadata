@@ -1,5 +1,6 @@
 import { Player, Team, Match, Sport } from "../types";
 import { formatForShutterstock } from "./stockAgencies";
+import { sortPlayerNumber } from "./sortUtils";
 
 interface TeamPlayers {
   team: Team;
@@ -12,6 +13,7 @@ const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 /**
  * Generates TXT file for Photo Mechanic code replacements
  * Format: {team_code}{player_number}\t{first_name} {last_name} ({player_number})
+ * If first_name is empty, format is: {team_code}{player_number}\t{last_name} ({player_number})
  * Exports all teams from the match into one file
  */
 export async function exportToTxt(
@@ -41,28 +43,15 @@ export async function exportToTxt(
     // Add separator line under team name
     allLines.push("---------------------");
     
-    // Sort function that handles both numbers and letters
-    const sortPlayerNumber = (a: string, b: string): number => {
-      const aIsNumber = !isNaN(Number(a));
-      const bIsNumber = !isNaN(Number(b));
-      
-      if (aIsNumber && bIsNumber) {
-        return Number(a) - Number(b);
-      }
-      if (!aIsNumber && !bIsNumber) {
-        return a.localeCompare(b);
-      }
-      if (aIsNumber && !bIsNumber) return -1;
-      if (!aIsNumber && bIsNumber) return 1;
-      return 0;
-    };
-
     // Add players
     const validPlayers = players.filter((p) => p.valid);
     const lines = validPlayers
       .sort((a, b) => sortPlayerNumber(a.player_number, b.player_number))
       .map((player) => {
-        const line = `${team.team_code}${player.player_number}\t${player.first_name} ${player.last_name} (${player.player_number})`;
+        const namePart = player.first_name?.trim() 
+          ? `${player.first_name} ${player.last_name}`
+          : player.last_name;
+        const line = `${team.team_code}${player.player_number}\t${namePart} (${player.player_number})`;
         return line;
       });
     allLines.push(...lines);
